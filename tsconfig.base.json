@@ -15,7 +15,8 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "@backend/grpc": ["libs/grpc/src/index.ts"]
+      "@backend/grpc": ["libs/grpc/src/index.ts"],
+      "@backend/nestjs": ["libs/nestjs/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]

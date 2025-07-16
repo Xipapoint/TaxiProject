@@ -1,5 +1,4 @@
-import { Driver } from './Driver';
-import { Column, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, PrimaryGeneratedColumn } from 'typeorm';
 
 export class Car {
   @PrimaryGeneratedColumn()
@@ -17,6 +16,6 @@ export class Car {
   @Column()
   year: number;
 
-  @OneToOne(() => Driver, (driver) => driver.car)
-  driver: Driver;
+  @Column()
+  driverId: string
 }
