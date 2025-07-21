@@ -1,8 +1,9 @@
 import { Inject } from '@nestjs/common';
 import { Repository } from 'typeorm';
-import { InjectionToken } from '../../constants/InjectionToken';
-import { Client } from '../../entities/Client';
-import { AbstractUserDao } from './abstract.dao';
+import { InjectionToken } from '../../../auth/constants/InjectionToken';
+import { Client } from '../../../shared/entities/Client';
+import { AbstractUserDao } from './abstract.users.dao';
+import { CreateClientDto } from '../../../shared/dto/request/create/create-client.dto';
 
 export class ClientDao extends AbstractUserDao<Client> {
 
@@ -20,16 +21,11 @@ export class ClientDao extends AbstractUserDao<Client> {
     return this.repo.findOne({ where: { phoneNumber } });
   }
 
-  async create<CreateClientDto>(data: CreateClientDto): Promise<Client> {
-    try {
-      
-      return this.repo.save(data)
-    } catch (error) {
-      
-    }
+  async create(data: CreateClientDto): Promise<Client> {
+    return this.repo.save(data)
   }
 
-  delete(id: number): Promise<void> {
-    
+  async delete(id: number): Promise<void> {
+    await this.repo.delete(id)
   }
 }

@@ -1,5 +1,5 @@
 import { Repository } from 'typeorm';
-import { User } from '../../entities/abstract.entity';
+import { User } from '../../../shared/entities/abstract.entity';
 import { AbstractCreateUserDto } from '../../../shared/dto/request/create/base-create.dto';
 
 export abstract class AbstractUserDao<T extends User> {

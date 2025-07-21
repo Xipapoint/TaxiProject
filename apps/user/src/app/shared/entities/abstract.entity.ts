@@ -1,5 +1,6 @@
-import { PrimaryGeneratedColumn, Column } from 'typeorm';
+import { PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
+import Address from './Address';
 
 export abstract class User {
   @PrimaryGeneratedColumn({ type: 'int' })
@@ -36,6 +37,23 @@ export abstract class User {
   })
   @Column({ type: 'varchar', unique: true })
   email: string;
+
+  @ApiProperty({
+    type: String,
+    format: 'date',
+    description: "User's date of birth (YYYY-MM-DD)",
+    example: "1990-01-01",
+  })
+  @Column({ type: 'date' })
+  dateOfBirth: string;
+
+  @OneToMany(
+    () => Address, 
+    (address: Address) => address.user, {
+      cascade: true,
+    }
+  )
+  public address: Address;
 
   @ApiProperty({
     type: String,

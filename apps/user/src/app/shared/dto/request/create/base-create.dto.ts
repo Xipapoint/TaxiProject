@@ -44,6 +44,16 @@ export class AbstractCreateUserDto {
 
   @ApiProperty({
     type: String,
+    description: "User's date of birth",
+    example: "1990.01.01",
+  })
+  @IsString({ message: 'Date of birth must be a string in format YYYY.MM.DD' })
+  @MinLength(10, { message: 'Date of birth must be in format YYYY.MM.DD' })
+  @MaxLength(10, { message: 'Date of birth must be in format YYYY.MM.DD' })
+  dateOfBirth: string;
+
+  @ApiProperty({
+    type: String,
     description: 'Plain user password',
     example: 'strongPassword123',
   })

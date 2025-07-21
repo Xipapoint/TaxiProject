@@ -25,6 +25,7 @@ export class CatchFilter implements ExceptionFilter {
       if (exception.isOperational) {
         this.logger.warn(`[${status}] ${message}`);
       } else {
+        // TODO: SEND ALERT TO LOGGING MICROSERVICE
         this.logger.error(`Non-operational error: ${message}`);
       }
     } else if (exception instanceof HttpException) {
@@ -37,8 +38,10 @@ export class CatchFilter implements ExceptionFilter {
 
       this.logger.warn(`[${status}] ${message}`);
     } else if (exception instanceof Error) {
+      // TODO: SEND ALERT TO LOGGING MICROSERVICE
       this.logger.error(exception.message);
     } else {
+      // TODO: SEND ALERT TO LOGGING MICROSERVICE
       this.logger.error(`Unknown error: ${JSON.stringify(exception)}`);
     }
 
