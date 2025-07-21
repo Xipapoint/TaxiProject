@@ -1,7 +1,7 @@
 export abstract class AbstractRedisAuthDao {
-    storeRefreshToken(userId, token, expiration)
+    abstract storeRefreshToken(userId, token, expiration)
 
-    getUserIdByRefreshToken(token)
+    abstract getUserIdByRefreshToken(token)
 
-    removeRefreshToken(token)
+    abstract removeRefreshToken(token)
 }

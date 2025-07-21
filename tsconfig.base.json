@@ -16,7 +16,8 @@
     "baseUrl": ".",
     "paths": {
       "@backend/grpc": ["libs/grpc/src/index.ts"],
-      "@backend/nestjs": ["libs/nestjs/src/index.ts"]
+      "@backend/nestjs": ["libs/nestjs/src/index.ts"],
+      "@backend/redis": ["libs/redis/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]
