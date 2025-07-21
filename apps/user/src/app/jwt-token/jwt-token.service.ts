@@ -12,7 +12,7 @@ export interface DeviceInfo {
 
 export interface RefreshTokenData {
   id: string;
-  userId: string;
+  userId: number;
   token: string;
   device: string;
   location: string;
@@ -74,8 +74,8 @@ export class JwtTokenService {
 
         // Проверяем устройство и местоположение (дополнительная безопасность)
         if (this.shouldValidateDevice(storedToken, deviceInfo)) {
-        await this.revokeAllUserTokens(storedToken.userId);
-        throw new Error('Suspicious activity detected. All sessions revoked.');
+            await this.revokeAllUserTokens(storedToken.userId);
+            throw new Error('Suspicious activity detected. All sessions revoked.');
         }
 
         // Обновляем время последнего использования
