@@ -5,12 +5,19 @@ import { BadRequest, PostgresErrorCode } from "@backend/nestjs";
 import bcrypt, { compare } from 'bcrypt'
 import { AbstractUserRepository } from "../../users/repository/abstract.users.repository";
 import { ConfigService } from "@nestjs/config";
+import { JwtTokenService } from "../../jwt-token/jwt-token.service";
 export class ClientService extends AbstractAuthService<Client> {
     constructor(
         @Inject(InjectionToken.USER_CLIENT_REPOSITORY) private readonly usersService: AbstractUserRepository<Client>,
         private readonly configService: ConfigService,
+        private readonly jwtTokenService: JwtTokenService
     ) {
         super();
+    }
+
+
+    private async hashSensetiveData() {
+        
     }
 
     private async verifyUser(data: LoginUserDto) {
