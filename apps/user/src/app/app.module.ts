@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import path from 'path';
+import { Client } from './core/user/infrastructure/entity';
 
 @Module({
   imports: [
@@ -16,9 +17,9 @@ import path from 'path';
         username: configService.get('POSTGRES_USER'),
         password: configService.get('POSTGRES_PASSWORD'),
         database: configService.get('POSTGRES_DB'),
-        entities: [path.resolve(__dirname, '**', '*.ts')],
-      }),
+        entities: [Client]
     }),
+    })
   ],
 })
 export class AppModule {}

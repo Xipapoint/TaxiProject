@@ -1,7 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { InjectionToken } from '../constants/InjectionToken';
-import { Client } from '../entities/Client';
+import { Client } from '../../core/user/infrastructure/entity/Client/Client';
 import { UserDao } from './UserDao';
 
 @Injectable()

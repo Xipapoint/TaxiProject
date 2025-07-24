@@ -1,4 +1,4 @@
-import { User } from './abstract.entity';
+import { User } from '../abstract.entity';
 import { Entity } from 'typeorm';
 
 @Entity()

@@ -1,9 +1,9 @@
 import { Inject } from "@nestjs/common";
 import { InjectionToken } from "../../auth/constants/InjectionToken";
 import { ClientDao } from "../dao/postgres/client.users.dao";
-import { Client } from "../../shared/entities/Client";
+import { Client } from "../../core/user/infrastructure/entity/Client/Client";
 import { AbstractUserRepository } from "./abstract.users.repository";
-import { CreateClientDto } from "../../shared/dto/request/create/create-client.dto";
+import { CreateClientDto } from "../../core/user/infrastructure/interface/dto/request/create/create-client.dto";
 
 export class ClientRepository extends AbstractUserRepository<Client> {
     constructor(

@@ -1,6 +1,6 @@
 import { Inject } from "@nestjs/common";
 import { InjectionToken } from "../../shared";
-import { Client } from "../../shared/entities/Client";
+import { Client } from "../../core/user/infrastructure/entity/Client/Client";
 import { ClientDao } from "../../users/dao/postgres/client.users.dao";
 import { AbstractAuthRepository } from "./abstract.auth.repository";
 import { ClientRedisAuthDao } from "../dao/redis/client-redis.auth.dao";

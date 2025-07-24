@@ -1,9 +1,9 @@
 import { Inject } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { InjectionToken } from '../../../auth/constants/InjectionToken';
-import { Client } from '../../../shared/entities/Client';
+import { Client } from '../../../core/user/infrastructure/entity/Client/Client';
 import { AbstractUserDao } from './abstract.users.dao';
-import { CreateClientDto } from '../../../shared/dto/request/create/create-client.dto';
+import { CreateClientDto } from '../../../core/user/infrastructure/interface/dto/request/create/create-client.dto';
 
 export class ClientDao extends AbstractUserDao<Client> {
 

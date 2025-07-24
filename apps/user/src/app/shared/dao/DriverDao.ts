@@ -1,7 +1,7 @@
 import { Inject, Injectable } from "@nestjs/common";
 import { Repository } from "typeorm";
 import { InjectionToken } from "../constants/InjectionToken";
-import { Driver } from "../entities/Driver";
+import { Driver } from "../../core/user/infrastructure/entity/Driver/Driver";
 import { UserDao } from "./UserDao";
 
 @Injectable()

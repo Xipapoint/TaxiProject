@@ -1,5 +1,5 @@
-import { AbstractCreateUserDto } from "../../shared/dto/request/create/base-create.dto";
-import { User } from "../../shared/entities/abstract.entity";
+import { AbstractCreateUserDto } from "../../core/user/infrastructure/interface/dto/request/create/base-create.dto";
+import { User } from "../../core/user/infrastructure/entity/abstract.entity";
 
 export abstract class AbstractUserRepository<T extends User> {
 

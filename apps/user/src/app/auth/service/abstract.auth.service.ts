@@ -1,5 +1,5 @@
 import { LoginUserDto, User } from "../../shared";
-import { AbstractCreateUserDto } from '../../shared/dto/request/create/base-create.dto';
+import { AbstractCreateUserDto } from '../../core/user/infrastructure/interface/dto/request/create/base-create.dto';
 
 export abstract class AbstractAuthService<T extends User> {
     abstract register<K extends AbstractCreateUserDto>(data: K): Promise<T>;

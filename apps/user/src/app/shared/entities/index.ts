@@ -1,4 +1,4 @@
 export * from './Car'
-export * from './Client'
-export * from './Driver'
-export * from './abstract.entity'
+export * from '../../core/user/infrastructure/entity/Client/Client'
+export * from '../../core/user/infrastructure/entity/Driver/Driver'
+export * from '../../core/user/infrastructure/entity/abstract.entity'

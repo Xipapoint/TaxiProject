@@ -15,6 +15,7 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
+      "@backend/database": ["libs/database/src/index.ts"],
       "@backend/grpc": ["libs/grpc/src/index.ts"],
       "@backend/nestjs": ["libs/nestjs/src/index.ts"],
       "@backend/redis": ["libs/redis/src/index.ts"]

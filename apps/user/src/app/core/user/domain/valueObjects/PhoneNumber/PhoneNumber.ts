@@ -1,5 +1,5 @@
 import { IsPhoneNumber } from 'class-validator';
-import { CountryCode } from '../types/CountryCode';
+import { CountryCode } from '../../types/CountryCode';
 
 export class PhoneNumber {
     //TODO: ADD VALIDATION FOR ABSOLUTE ALL REGIONS

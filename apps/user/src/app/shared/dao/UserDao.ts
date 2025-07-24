@@ -1,5 +1,5 @@
 import { FindOptionsWhere, Repository } from 'typeorm';
-import { User } from '../entities/abstract.entity';
+import { User } from '../../core/user/infrastructure/entity/abstract.entity';
 
 export class UserDao<T extends User> {
   constructor(readonly repo: Repository<T>) {}

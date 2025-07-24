@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { DRIVER_VERIFICATION_STATUS } from '../enum/DriverVerificationStatus';
-import { User } from './abstract.entity';
+import { DRIVER_VERIFICATION_STATUS } from '../../../../../shared/enum/DriverVerificationStatus';
+import { User } from '../abstract.entity';
 import { Column, Entity } from 'typeorm';
 
 @Entity()

@@ -1,6 +1,6 @@
 import { Repository } from 'typeorm';
-import { User } from '../../../shared/entities/abstract.entity';
-import { AbstractCreateUserDto } from '../../../shared/dto/request/create/base-create.dto';
+import { User } from '../../../core/user/infrastructure/entity/abstract.entity';
+import { AbstractCreateUserDto } from '../../../core/user/infrastructure/interface/dto/request/create/base-create.dto';
 
 export abstract class AbstractUserDao<T extends User> {
   constructor(protected readonly repo: Repository<T>) {}

@@ -1,6 +1,6 @@
 
-import { IUser, UserEssentialProperties, UserImplement, UserOptionalProperties, UserProperties } from './base.user';
-import { ClientRegisteredEvent } from '../event/ClientRegisteredEvent';
+import { IUser, UserEssentialProperties, UserImplement, UserOptionalProperties, UserProperties } from '../base/base.user';
+import { ClientRegisteredEvent } from '../../event/ClientRegisteredEvent';
 
 export type ClientEssentialProperties = UserEssentialProperties
 
@@ -17,7 +17,7 @@ export class ClientImplement extends UserImplement implements Client {
     Object.assign(this, properties);
   }
     compareId: (id: string) => boolean;
-    register(): void {
+    create(): void {
         this.createdAt = new Date();
         this.updatedAt = new Date();
         this.apply(new ClientRegisteredEvent(this.id, this.email));

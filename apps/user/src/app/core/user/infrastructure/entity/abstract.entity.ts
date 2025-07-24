@@ -1,10 +1,10 @@
-import { PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
+import { PrimaryGeneratedColumn, Column, OneToMany, PrimaryColumn } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
-import Address from './Address';
+import Address from '../../../../shared/entities/Address';
 
 export abstract class User {
-  @PrimaryGeneratedColumn({ type: 'int' })
-  id: number;
+  @PrimaryColumn({ type: 'binary', length: 16 })
+  id: Buffer;
 
   @ApiProperty({
     type: String,
@@ -47,13 +47,13 @@ export abstract class User {
   @Column({ type: 'date' })
   dateOfBirth: string;
 
-  @OneToMany(
-    () => Address, 
-    (address: Address) => address.user, {
-      cascade: true,
-    }
-  )
-  public address: Address;
+  // @OneToMany(
+  //   () => Address, 
+  //   (address: Address) => address.user, {
+  //     cascade: true,
+  //   }
+  // )
+  // public address: Address;
 
   @ApiProperty({
     type: String,
@@ -62,4 +62,22 @@ export abstract class User {
   })
   @Column({ type: 'varchar' })
   passwordHash: string;
+
+  @ApiProperty({
+    type: String,
+    format: 'date-time',
+    description: "Date and time when the user was created",
+    example: "2024-06-01T12:00:00.000Z",
+  })
+  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+  createdAt: Date;
+
+  @ApiProperty({
+    type: String,
+    format: 'date-time',
+    description: "Date and time when the user was last updated",
+    example: "2024-06-01T12:00:00.000Z",
+  })
+  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP', onUpdate: 'CURRENT_TIMESTAMP' })
+  updatedAt: Date;
 }

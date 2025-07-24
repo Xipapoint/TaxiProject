@@ -1,32 +1,33 @@
 import { Inject } from '@nestjs/common';
 import { EventPublisher } from '@nestjs/cqrs';
 
-import { ClientImplement, ClientProperties } from '../entities/Client';
-import { Email } from '../valueObjects/Email';
-import { PhoneNumber } from '../valueObjects/PhoneNumber';
-import { UserId } from '../valueObjects/UserId';
+import { ClientImplement, ClientProperties } from '../../entities';
+import { Email } from '../../valueObjects/Email/Email';
+import { PhoneNumber } from '../../valueObjects/PhoneNumber/PhoneNumber';
+import { UserId } from '../../valueObjects/UserId/UserId';
 
 type CreateClientOptions = Readonly<{
-  id: UserId;
-  phoneNumber: PhoneNumber;
+  id: string;
+  phoneNumber: string;
   firstName: string;
   lastName: string;
-  email: Email;
+  email: string;
   dateOfBirth: string;
   passwordHash: string;
-  addressId: string;
 }>;
 
-export class UserFactory {
+export class ClientFactory {
   @Inject(EventPublisher) private readonly eventPublisher: EventPublisher;
 
   create(options: CreateClientOptions) {
     return this.eventPublisher.mergeObjectContext(
       new ClientImplement({
         ...options,
+        phoneNumber: new PhoneNumber(options.phoneNumber),
+        email: new Email(options.email),
+        id: new UserId(options.id),
         createdAt: new Date(),
         updatedAt: new Date(),
-        deletedAt: null,
       }),
     );
   }
