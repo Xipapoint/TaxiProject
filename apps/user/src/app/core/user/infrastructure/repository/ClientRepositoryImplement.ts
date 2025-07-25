@@ -1,22 +1,18 @@
 import { Inject } from '@nestjs/common';
 
 import {
-  EntityId,
-  EntityIdTransformer,
   ENTITY_ID_TRANSFORMER,
-  writeConnection,
+  EntityId,
+  writeConnection
 } from '@backend/database';
 
 import { Client } from '../entity';
 
-import { ClientRepository, Email, PhoneNumber, UserId } from '../../domain';
-import { ClientImplement, ClientProperties } from '../../domain';
-import { ClientFactory } from '../../domain';
+import { ClientFactory, ClientImplement, ClientRepository, Email, PhoneNumber, UserId } from '../../domain';
 
 export class ClientRepositoryImplement implements ClientRepository {
   @Inject() private readonly сlientFactory: ClientFactory;
   @Inject(ENTITY_ID_TRANSFORMER)
-  private readonly entityIdTransformer: EntityIdTransformer;
 
   async newId(): Promise<string> {
     return new EntityId().toString();
@@ -31,7 +27,7 @@ export class ClientRepositoryImplement implements ClientRepository {
   async findById(id: string): Promise<ClientImplement | null> {
     const entity = await writeConnection.manager
       .getRepository(Client)
-      .findOneBy({ id: this.entityIdTransformer.to(id) });
+      .findOneBy({ id });
     return entity ? this.entityToModel(entity) : null;
   }
 
@@ -50,23 +46,28 @@ export class ClientRepositoryImplement implements ClientRepository {
   }
 
   private modelToEntity(model: ClientImplement): Client {
-    const properties = JSON.parse(JSON.stringify(model)) as ClientProperties;
     return {
-      ...properties,
-      id: this.entityIdTransformer.to(properties.id.getValue()),
-      phoneNumber: typeof properties.phoneNumber === 'string' ? properties.phoneNumber : model.getPhoneNumber().getValue(),
-      email: typeof properties.email === 'string' ? properties.email : model.getEmail().getValue(),
-      createdAt: properties.createdAt,
-      updatedAt: properties.updatedAt,
+      id: model.getId().getValue(),
+      firstName: model.getFirstName(),
+      lastName: model.getLastName(),
+      email: model.getEmail().getValue(),
+      phoneNumber: model.getPhoneNumber().getValue(),
+      dateOfBirth: model.getDateOfBirth(),
+      passwordHash: model.getPasswordHash(),
+      createdAt: model.getCreatedAt(),
+      updatedAt: model.getUpdatedAt(),
     };
   }
 
   private entityToModel(entity: Client): ClientImplement {
     return this.сlientFactory.reconstitute({
-      ...entity,
-      id: new UserId(this.entityIdTransformer.from(entity.id)),
+      id: new UserId(entity.id),
+      firstName: entity.firstName,
+      lastName: entity.lastName,
       phoneNumber: new PhoneNumber(entity.phoneNumber),
-      email: new Email(entity.phoneNumber),
+      email: new Email(entity.email),
+      dateOfBirth: entity.dateOfBirth,
+      passwordHash: entity.passwordHash,
       createdAt: entity.createdAt,
       updatedAt: entity.updatedAt,
     });

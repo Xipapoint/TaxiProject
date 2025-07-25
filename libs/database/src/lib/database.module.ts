@@ -79,7 +79,7 @@ export const ENTITY_ID_TRANSFORMER = 'EntityIdTransformer';
 
 export interface EntityIdTransformer {
   from: (dbData: Buffer) => string;
-  to: (stringId: string) => Buffer;
+  to: (stringId: string) => string;
 }
 
 class EntityIdTransformerImplement implements EntityIdTransformer {
@@ -87,7 +87,7 @@ class EntityIdTransformerImplement implements EntityIdTransformer {
     return Buffer.from(dbData.toString('binary'), 'ascii').toString('hex');
   }
 
-  to(entityData: string): Buffer {
+  to(entityData: string): string {
     return Buffer.from(entityData, 'hex');
   }
 }

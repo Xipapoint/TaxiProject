@@ -3,8 +3,8 @@ import { ApiProperty } from '@nestjs/swagger';
 import Address from '../../../../shared/entities/Address';
 
 export abstract class User {
-  @PrimaryColumn({ type: 'binary', length: 16 })
-  id: Buffer;
+  @PrimaryColumn({ type: "uuid" })
+  id: string;
 
   @ApiProperty({
     type: String,

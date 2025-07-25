@@ -4,7 +4,8 @@
   "license": "MIT",
   "scripts": {
     "prepare": "husky",
-    "test": ""
+    "test": "",
+    "migration:run": "node dist/apps/user/main.js"
   },
   "private": true,
   "dependencies": {

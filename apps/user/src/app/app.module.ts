@@ -3,6 +3,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import path from 'path';
 import { Client } from './core/user/infrastructure/entity';
+import { UserModule } from './core/user/user.module';
 
 @Module({
   imports: [
@@ -19,7 +20,8 @@ import { Client } from './core/user/infrastructure/entity';
         database: configService.get('POSTGRES_DB'),
         entities: [Client]
     }),
-    })
+    }),
+    UserModule
   ],
 })
 export class AppModule {}
