@@ -1,12 +1,10 @@
-import { Inject } from '@nestjs/common';
-import { CommandHandler, ICommandHandler } from '@nestjs/cqrs'
-import { CreateClientCommand } from '../../command';
-import { PASSWORD_GENERATOR, PasswordGenerator } from '../../../../../libs/PasswordModule';
-import { ClientFactory } from '../../../domain';
 import { Transactional } from '@backend/nestjs';
+import { Inject } from '@nestjs/common';
+import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
+import { PASSWORD_GENERATOR, PasswordGenerator } from '../../../../../libs/PasswordModule';
+import { ClientFactory, ClientRepository } from '../../../domain';
+import { CreateClientCommand } from '../../command';
 import { InjectionToken } from '../../InjectionToken';
-import { ClientRepository } from '../../../domain';
-import { UserId } from '../../../domain/valueObjects/UserId/UserId';
 
 
 @CommandHandler(CreateClientCommand)
@@ -25,7 +23,6 @@ export class CreateClientHandler
 
     const client = this.accountFactory.create({
       ...command.props,
-      id: await this.accountRepository.newId(),
       passwordHash: await this.passwordGenerator.generateKey(command.props.password),
     });
 

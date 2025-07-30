@@ -1,4 +1,4 @@
-export interface CreateClientDto {
+export interface CreateClientCommandDto {
     phoneNumber: string;
     firstName: string;
     lastName: string;

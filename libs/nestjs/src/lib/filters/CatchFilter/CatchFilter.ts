@@ -5,10 +5,12 @@ import {
   HttpException,
   HttpStatus,
   Logger,
+  Injectable,
 } from '@nestjs/common';
 import { Response } from 'express';
 import { AppError } from '../../errors';
 @Catch()
+@Injectable()
 export class CatchFilter implements ExceptionFilter {
     private readonly logger = new Logger(CatchFilter.name)
   catch(exception: unknown, host: ArgumentsHost) {

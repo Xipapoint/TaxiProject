@@ -7,7 +7,6 @@ import { PhoneNumber } from '../../valueObjects/PhoneNumber/PhoneNumber';
 import { UserId } from '../../valueObjects/UserId/UserId';
 
 type CreateClientOptions = Readonly<{
-  id: string;
   phoneNumber: string;
   firstName: string;
   lastName: string;
@@ -25,7 +24,7 @@ export class ClientFactory {
         ...options,
         phoneNumber: new PhoneNumber(options.phoneNumber),
         email: new Email(options.email),
-        id: new UserId(options.id),
+        id: new UserId(),
         createdAt: new Date(),
         updatedAt: new Date(),
       }),

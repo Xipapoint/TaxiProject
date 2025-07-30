@@ -1,11 +1,8 @@
 export class UserId {
     private readonly value: string;
 
-    constructor(value: string) {
-        if (!value || typeof value !== 'string') {
-            throw new Error('UserId must be a non-empty string');
-        }
-        this.value = value;
+    constructor(id?: string) {
+        this.value = id ?? crypto.randomUUID().split('-').join('');
     }
 
     public getValue(): string {

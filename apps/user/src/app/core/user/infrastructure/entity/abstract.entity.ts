@@ -1,9 +1,14 @@
-import { PrimaryGeneratedColumn, Column, OneToMany, PrimaryColumn } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
-import Address from '../../../../shared/entities/Address';
+import { Column, PrimaryColumn } from 'typeorm';
+// import Address from '../../../../shared/entities/Address';
 
 export abstract class User {
-  @PrimaryColumn({ type: "uuid" })
+  @PrimaryColumn("uuid")
+  @ApiProperty({
+    type: String,
+    description: "User's unique identifier",
+    example: "123e4567-e89b-12d3-a456-426614174000",
+  })
   id: string;
 
   @ApiProperty({

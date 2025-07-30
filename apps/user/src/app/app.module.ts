@@ -1,9 +1,12 @@
-import { Module } from '@nestjs/common';
+import { LibNestjsModule, ModuleRefStore, RequestStorageMiddleware } from '@backend/nestjs';
+import { MiddlewareConsumer, Module, OnModuleInit } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import path from 'path';
 import { Client } from './core/user/infrastructure/entity';
 import { UserModule } from './core/user/user.module';
+import { ModuleRef } from '@nestjs/core';
+import { DatabaseModule } from '@backend/database';
+import { DatabaseOptions } from '../database-options';
 
 @Module({
   imports: [
@@ -21,7 +24,18 @@ import { UserModule } from './core/user/user.module';
         entities: [Client]
     }),
     }),
-    UserModule
+    UserModule,
+    DatabaseModule.forRootAsync(async () => DatabaseOptions),
+    LibNestjsModule.forRootAsync(async () => DatabaseOptions),
   ],
 })
-export class AppModule {}
+export class AppModule implements OnModuleInit {
+  constructor(private readonly moduleRef: ModuleRef) {}
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(RequestStorageMiddleware).forRoutes('*');
+  }
+
+  onModuleInit() {
+    ModuleRefStore.set(this.moduleRef);
+  }
+}

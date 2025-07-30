@@ -1,45 +1,47 @@
-import { Inject } from '@nestjs/common';
-
-import {
-  ENTITY_ID_TRANSFORMER,
-  EntityId,
-  writeConnection
-} from '@backend/database';
+import { Inject, Injectable, OnModuleInit } from '@nestjs/common';
 
 import { Client } from '../entity';
 
+import { DataSource, EntityManager, QueryRunner } from 'typeorm';
 import { ClientFactory, ClientImplement, ClientRepository, Email, PhoneNumber, UserId } from '../../domain';
 
-export class ClientRepositoryImplement implements ClientRepository {
+@Injectable()
+export class ClientRepositoryImplement implements OnModuleInit, ClientRepository {
   @Inject() private readonly сlientFactory: ClientFactory;
-  @Inject(ENTITY_ID_TRANSFORMER)
+  private writeConnection: QueryRunner
+  private readConnection: EntityManager;
+  
+  constructor(
+    private readonly dataSource: DataSource
+  ) {}
 
-  async newId(): Promise<string> {
-    return new EntityId().toString();
+  onModuleInit() {
+    this.writeConnection = this.dataSource.createQueryRunner();
+    this.readConnection = this.dataSource.manager;
   }
 
   async save(data: ClientImplement | ClientImplement[]): Promise<void> {
     const models = Array.isArray(data) ? data : [data];
     const entities = models.map((model) => this.modelToEntity(model));
-    await writeConnection.manager.getRepository(Client).save(entities);
+    await this.writeConnection.manager.getRepository(Client).save(entities);
   }
 
   async findById(id: string): Promise<ClientImplement | null> {
-    const entity = await writeConnection.manager
+    const entity = await this.writeConnection.manager
       .getRepository(Client)
       .findOneBy({ id });
     return entity ? this.entityToModel(entity) : null;
   }
 
   async findByPhoneNumber(phoneNumber: string): Promise<ClientImplement[]> {
-    const entities = await writeConnection.manager
+    const entities = await this.writeConnection.manager
       .getRepository(Client)
       .findBy({ phoneNumber });
     return entities.map((entity) => this.entityToModel(entity));
   }
 
   async findByEmail(email: string): Promise<ClientImplement[]> {
-    const entities = await writeConnection.manager
+    const entities = await this.writeConnection.manager
       .getRepository(Client)
       .findBy({ email });
     return entities.map((entity) => this.entityToModel(entity));

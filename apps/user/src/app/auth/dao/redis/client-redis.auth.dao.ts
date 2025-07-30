@@ -1,5 +1,5 @@
-import { AbstractRedisAuthDao } from "./abstract-redis.auth.dao";
+// import { AbstractRedisAuthDao } from "./abstract-redis.auth.dao";
 
-export class ClientRedisAuthDao extends AbstractRedisAuthDao {
+// export class ClientRedisAuthDao extends AbstractRedisAuthDao {
     
-}
+// }

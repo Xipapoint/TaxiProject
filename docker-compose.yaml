@@ -14,7 +14,7 @@ services:
     image: redis/redisinsight:latest
     container_name: redisinsight
     ports:
-      - "8001:8001"
+      - "8001:5540"
     depends_on:
       - redis
 
@@ -24,11 +24,9 @@ services:
     ports:
       - "5432:5432"
     environment:
-      POSTGRES_HOST: localhost
-      POSTGRES_PORT: 5432
-      POSTGRES_USER: arsenii
-      POSTGRES_PASSWORD: test1234
-      POSTGRES_DB: taxi_db
+      POSTGRES_USER: "arsenii"
+      POSTGRES_PASSWORD: "test1234"
+      POSTGRES_DB: "taxi_db"
     volumes:
       - postgres-data:/var/lib/postgresql/data
 
@@ -45,20 +43,20 @@ services:
     depends_on:
       - postgres
 
-  migration:
-    build:
-      context: .
-      dockerfile: ./apps/user/Dockerfile.ts
-    container_name: migration
-    depends_on:
-      - postgres
-    environment:
-      DB_HOST: postgres
-      DB_PORT: 5432
-      DB_USERNAME: arsenii
-      DB_PASSWORD: test1234
-      DB_NAME: taxi_db
-    command: npm run migration:run
+  # migration:
+  #   build:
+  #     context: .
+  #     dockerfile: ./apps/user/Dockerfile.ts
+  #   container_name: migration
+  #   depends_on:
+  #     - postgres
+  #   environment:
+  #     DB_HOST: postgres
+  #     DB_PORT: 5432
+  #     DB_USERNAME: arsenii
+  #     DB_PASSWORD: test1234
+  #     DB_NAME: taxi_db
+  #   command: npm run migration:run
 
 volumes:
   redis-data:
