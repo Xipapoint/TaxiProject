@@ -4,6 +4,7 @@ import { Client } from '../entity';
 
 import { DataSource, EntityManager, QueryRunner } from 'typeorm';
 import { ClientFactory, ClientImplement, ClientRepository, Email, PhoneNumber, UserId } from '../../domain';
+import { ConflictError, PostgresErrorCode } from '@backend/nestjs';
 
 @Injectable()
 export class ClientRepositoryImplement implements OnModuleInit, ClientRepository {
@@ -21,9 +22,15 @@ export class ClientRepositoryImplement implements OnModuleInit, ClientRepository
   }
 
   async save(data: ClientImplement | ClientImplement[]): Promise<void> {
-    const models = Array.isArray(data) ? data : [data];
-    const entities = models.map((model) => this.modelToEntity(model));
-    await this.writeConnection.manager.getRepository(Client).save(entities);
+    try {
+      const models = Array.isArray(data) ? data : [data];
+      const entities = models.map((model) => this.modelToEntity(model));
+      await this.writeConnection.manager.getRepository(Client).save(entities);
+    } catch (error) {
+      if (error?.code === PostgresErrorCode.UniqueViolation)
+        throw new ConflictError('Client with this phone number or email already exists');
+      throw error
+    }
   }
 
   async findById(id: string): Promise<ClientImplement | null> {

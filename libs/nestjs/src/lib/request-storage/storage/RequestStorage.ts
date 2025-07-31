@@ -1,4 +1,4 @@
-import { Injectable, InternalServerErrorException, Scope } from '@nestjs/common';
+import { InternalServerErrorException } from '@nestjs/common';
 import { AsyncLocalStorage } from 'async_hooks';
 
 
@@ -9,19 +9,18 @@ class Storage {
 }
 
 export interface RequestStorage {
-  reset: () => void;
+  reset: (requestContextObject: any) => void;
   resetTransactionDepth: () => void;
   increaseTransactionDepth: () => void;
   decreaseTransactionDepth: () => void;
   getStorage: () => Storage
 }
 
-@Injectable({ scope: Scope.REQUEST })
 export class RequestStorageImplement implements RequestStorage {
   private readonly storage = new AsyncLocalStorage<Storage>();
 
-  reset(): void {
-    this.storage.enterWith(new Storage());
+  reset(requestContextObject: any): void {
+    this.storage.enterWith({ transactionDepth: 0 });
   }
 
   resetTransactionDepth(): void {
@@ -52,3 +51,5 @@ export class RequestStorageImplement implements RequestStorage {
     return storage;
   }
 }
+
+export const RequestStorageInstance = new RequestStorageImplement();

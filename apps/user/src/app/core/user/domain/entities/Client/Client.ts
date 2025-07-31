@@ -20,7 +20,7 @@ export class ClientImplement extends UserImplement implements Client {
     create(): void {
         this.createdAt = new Date();
         this.updatedAt = new Date();
-        this.apply(new UserRegisteredEvent(this.id, this.email));
+        this.apply(new UserRegisteredEvent(this.id.getValue(), this.email.getValue()));
     }
     updateInfo: (props: Partial<Omit<UserProperties, 'id'>>) => void;
     updatePassword: (passwordHash: string) => void;

@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { DRIVER_VERIFICATION_STATUS } from '../../../../../shared/enum/DriverVerificationStatus';
+import { DRIVER_VERIFICATION_STATUS } from '../../../domain/enum/DriverVerificationStatus';
 import { User } from '../abstract.entity';
 import { Column, Entity } from 'typeorm';
 
@@ -33,5 +33,5 @@ export class Driver extends User {
   })
 
   @ApiProperty({ type: 'string', format: 'uuid', required: false, description: 'ID of the car assigned to the driver' })
-  carId: string
+  carId?: string
 }

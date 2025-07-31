@@ -17,7 +17,6 @@ export class CreateClientHandler
   @Inject(PASSWORD_GENERATOR)
   private readonly passwordGenerator: PasswordGenerator;
 
-  @Transactional()
   async execute(command: CreateClientCommand): Promise<void> {
 
 
