@@ -12,4 +12,8 @@ export class Email {
     public getValue(): string {
         return this.value;
     }
+
+    public equals(other: Email): boolean {
+        return other instanceof Email && this.value === other.value;
+    }
 }

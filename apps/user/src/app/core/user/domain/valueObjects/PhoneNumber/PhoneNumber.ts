@@ -15,4 +15,8 @@ export class PhoneNumber {
     public getValue(): string {
         return this.value;
     }
+
+    public equals(other: PhoneNumber): boolean {
+        return other instanceof PhoneNumber && this.value === other.value;
+    }
 }

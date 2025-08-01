@@ -20,18 +20,21 @@ export class ClientFactory {
 
   create(options: CreateClientOptions) {
     return this.eventPublisher.mergeObjectContext(
-      new ClientImplement({
-        ...options,
-        phoneNumber: new PhoneNumber(options.phoneNumber),
-        email: new Email(options.email),
-        id: new UserId(),
-        createdAt: new Date(),
-        updatedAt: new Date(),
-      }),
+      new ClientImplement(
+        {
+          ...options,
+          phoneNumber: new PhoneNumber(options.phoneNumber),
+          email: new Email(options.email),
+          id: new UserId(),
+          createdAt: new Date(),
+          updatedAt: new Date(),
+        },
+        {}
+      ),
     );
   }
 
-  reconstitute(properties: ClientProperties) {
-    return this.eventPublisher.mergeObjectContext(new ClientImplement(properties));
+  reconstitute(userProperites, properties: ClientProperties) {
+    return this.eventPublisher.mergeObjectContext(new ClientImplement(userProperites, properties));
   }
 }
