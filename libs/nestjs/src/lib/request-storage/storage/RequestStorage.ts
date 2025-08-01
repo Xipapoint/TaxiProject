@@ -1,10 +1,12 @@
 import { InternalServerErrorException } from '@nestjs/common';
 import { AsyncLocalStorage } from 'async_hooks';
+import { QueryRunner } from 'typeorm';
 
 
 class Storage {
   constructor(
     readonly transactionDepth = 0,
+    readonly queryRunner?: QueryRunner,
   ) {}
 }
 

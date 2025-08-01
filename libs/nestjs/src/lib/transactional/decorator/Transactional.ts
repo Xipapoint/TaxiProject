@@ -1,28 +1,52 @@
-import { ContextIdFactory, ModuleRef } from '@nestjs/core';
-import { ModuleRefStore } from '../../module-ref/store/module-ref.store';
 import { RequestStorageInstance } from '../../request-storage';
-import { TransactionManagerService } from '../transactional-service/TransactionalService';
+import { QueryRunnerManager } from '../query-runner-manager/query-runner-manager';
+
+interface TransactionalContext {
+  queryRunnerManager: QueryRunnerManager
+}
 
 export function Transactional() {
   return (
-    target: Record<string, any>,
+    target: any,
     key: string,
-    descriptor: PropertyDescriptor,
-  ) => {
-    const originalMethod = descriptor.value;
-      descriptor.value = async function (...args: any[]) {
-        const requestContext = RequestStorageInstance.getStorage();
-        
-        const contextId = ContextIdFactory.getByRequest(requestContext);
+    descriptor: PropertyDescriptor
+  ): void => {
+    const original = descriptor.value as (...args: any[]) => Promise<any>;
 
-        const moduleRef: ModuleRef = (this as any)?.moduleRef ?? ModuleRefStore.get();
-        const txService = await moduleRef.resolve(
-          TransactionManagerService,
-          contextId,
-          { strict: false },
-        );
+    descriptor.value = async function (this: TransactionalContext, ...args: any[]) {
+      const qrm: QueryRunnerManager = this.queryRunnerManager;
+      const runner = qrm.getQueryRunner();
 
-        return txService.runInTransaction(() => originalMethod.apply(this, args));
-      };
+      const isNested = runner.isTransactionActive;
+      if (!isNested) {
+        RequestStorageInstance.resetTransactionDepth();
+        await runner.startTransaction();
+      } else {
+        RequestStorageInstance.increaseTransactionDepth();
+      }
+
+      try {
+        const result = await original.apply(this, args);
+
+        const depth = RequestStorageInstance.getStorage().transactionDepth;
+        if (!isNested && depth <= 0) {
+          await runner.commitTransaction();
+          await runner.release();
+        } else {
+          RequestStorageInstance.decreaseTransactionDepth();
+        }
+
+        return result;
+      } catch (err) {
+        const depthOnError = RequestStorageInstance.getStorage().transactionDepth;
+        if (!isNested && depthOnError <= 0) {
+          await runner.rollbackTransaction();
+          await runner.release();
+        } else {
+          RequestStorageInstance.decreaseTransactionDepth();
+        }
+        throw err;
+      }
+    };
   };
 }
