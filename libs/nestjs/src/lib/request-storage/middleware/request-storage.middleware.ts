@@ -8,7 +8,7 @@ export class RequestStorageMiddleware implements NestMiddleware {
     response: Response,
     next: (error?: object) => void,
   ): void {
-    RequestStorageInstance.reset(request);
+    RequestStorageInstance.reset();
 
     next();
   }

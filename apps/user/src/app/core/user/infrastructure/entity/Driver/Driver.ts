@@ -1,10 +1,15 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { DRIVER_VERIFICATION_STATUS } from '../../../domain/enum/DriverVerificationStatus';
-import { User } from '../abstract.entity';
-import { Column, Entity } from 'typeorm';
+import { User } from '../User';
+import { Column, Entity, JoinColumn, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
-export class Driver extends User {
+export class Driver {
+  @PrimaryGeneratedColumn('uuid') clientId: string
+  @OneToOne(() => User, { cascade: true })
+  @JoinColumn({ name: 'userId' })
+  user: User
+
   @Column({
     type: 'enum',
     enum: DRIVER_VERIFICATION_STATUS,

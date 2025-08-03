@@ -2,11 +2,12 @@ import { LibNestjsModule, ModuleRefStore, RequestStorageMiddleware } from '@back
 import { MiddlewareConsumer, Module, OnModuleInit } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Client } from './core/user/infrastructure/entity';
+import { ClientEntity } from './core/user/infrastructure/entity';
 import { UserModule } from './core/user/user.module';
 import { ModuleRef } from '@nestjs/core';
 import { DatabaseModule } from '@backend/database';
 import { DatabaseOptions } from '../database-options';
+import { User } from './core/user/infrastructure/entity/User';
 
 @Module({
   imports: [
@@ -21,7 +22,7 @@ import { DatabaseOptions } from '../database-options';
         username: configService.get('POSTGRES_USER'),
         password: configService.get('POSTGRES_PASSWORD'),
         database: configService.get('POSTGRES_DB'),
-        entities: [Client]
+        entities: [ClientEntity, User]
     }),
     }),
     UserModule,

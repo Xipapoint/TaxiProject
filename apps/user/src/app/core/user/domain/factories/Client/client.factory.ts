@@ -5,6 +5,7 @@ import { ClientImplement, ClientProperties } from '../../entities';
 import { Email } from '../../valueObjects/Email/Email';
 import { PhoneNumber } from '../../valueObjects/PhoneNumber/PhoneNumber';
 import { UserId } from '../../valueObjects/UserId/UserId';
+import { UserProfileProperties } from '../../entities/UserProfile/UserProfile';
 
 type CreateClientOptions = Readonly<{
   phoneNumber: string;
@@ -29,12 +30,14 @@ export class ClientFactory {
           createdAt: new Date(),
           updatedAt: new Date(),
         },
-        {}
+        {
+          clientId: new UserId()
+        }
       ),
     );
   }
 
-  reconstitute(userProperites, properties: ClientProperties) {
+  reconstitute(userProperites: UserProfileProperties, properties: ClientProperties) {
     return this.eventPublisher.mergeObjectContext(new ClientImplement(userProperites, properties));
   }
 }
