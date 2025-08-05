@@ -1,50 +1,51 @@
 import { AggregateRoot } from "@nestjs/cqrs";
+import { DeviceInfo } from '../valueObjects/DeviceInfo/DeviceInfo';
 import { Id } from '../valueObjects/Id/Id';
 import { TokenHash } from '../valueObjects/TokenHash/TokenHash';
-import { DeviceInfo } from '../valueObjects/DeviceInfo/DeviceInfo';
-import { TokenPair } from '../dto/TokenPair/TokenPair';
+import { ExpiresAt } from '../valueObjects/ExpiresAt/ExpiresAt';
 
-export type UserEssentialProperties = Readonly<{
+export type UserSessionEssentialProperties = Readonly<{
   readonly id: Id;
   readonly userId: Id;
   readonly refreshTokenHash: TokenHash;
   readonly deviceInfo: DeviceInfo;
   isRevoked: boolean;
-  readonly createdAt: Date;
-  readonly expiresAt: Date;
-  lastUsedAt: Date;
+  readonly expiresAt: ExpiresAt;
 }>;
 
-export type UserOptionalProperties = Readonly<
-  Partial<{
-    passwordHash: string;
+export type UserSessionOptionalProperties = Readonly<
+Partial<{
+    lastUsedAt: Date;
     createdAt: Date;
-    updatedAt: Date;
   }>
 >;
 
-export type UserProperties = UserEssentialProperties &
-  Required<UserOptionalProperties>;
+export type UserSessionProperties = UserSessionEssentialProperties &
+  Required<UserSessionOptionalProperties>;
 
 export interface IUser {
   compareId: (id: string) => boolean;
   revoke: (id: string) => void
   shouldInvalidate: (refreshToken: UserSession) => boolean
   shouldInvalidateByDevice: (otherDevice: DeviceInfo) => boolean
-  delete: () => void;
   commit: () => void;
 }
 
-export abstract class UserSession extends AggregateRoot implements IUser {
+export class UserSession extends AggregateRoot implements IUser {
   private readonly id: Id;
   private readonly userId: Id;
   private readonly refreshTokenHash: TokenHash;
   private readonly deviceInfo: DeviceInfo;
   private isRevoked: boolean;
   private readonly createdAt: Date;
-  private readonly expiresAt: Date;
+  private readonly expiresAt: ExpiresAt;
   private lastUsedAt: Date;
-
+  
+  constructor(properties: UserSessionProperties) {
+    super();
+    Object.assign(this, properties)
+  }
+  
   getId(): Id {
     return this.id;
   }
@@ -69,7 +70,7 @@ export abstract class UserSession extends AggregateRoot implements IUser {
     return this.createdAt;
   }
 
-  getExpiresAt(): Date {
+  getExpiresAt(): ExpiresAt {
     return this.expiresAt;
   }
 
@@ -84,10 +85,6 @@ export abstract class UserSession extends AggregateRoot implements IUser {
   setLastUsedAt(lastUsedAt: Date): void {
     this.lastUsedAt = lastUsedAt;
   }
-  
-  constructor() {
-    super();
-  }
   compareId(id: string): boolean {
     return this.id.equals(new Id(id));
   }
@@ -99,7 +96,7 @@ export abstract class UserSession extends AggregateRoot implements IUser {
   shouldInvalidate(userSession: UserSession): boolean {
     const otherRefreshToken = userSession.getRefreshTokenHash()
     const isOtherRevoked = userSession.getIsRevoked()
-    const isOtherExpired = userSession.expiresAt < new Date()
+    const isOtherExpired = userSession.expiresAt.getValue() < new Date()
     const equals = this.refreshTokenHash.equals(otherRefreshToken)
     if (!equals || isOtherRevoked || isOtherExpired)
       return true
@@ -111,5 +108,4 @@ export abstract class UserSession extends AggregateRoot implements IUser {
     return this.deviceInfo.validate(otherDevice)
   }
 
-  abstract delete(): void;
 }
