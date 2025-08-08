@@ -42,8 +42,7 @@ message TokenPair {
 }
 
 message User {
-    SuccessResponse success = 1;
-    UserData userData = 2;
-    TokenPair tokenPair = 3;
+    UserData userData = 1;
+    TokenPair tokenPair = 2;
 }
 

@@ -1,15 +1,14 @@
-import { UserData } from "@backend/grpc";
-import { ICommandHandler } from "@nestjs/cqrs";
-import { CreateUserSessionCommand } from '../command/CreateUserSessionCommand/CreateUserSessionCommand';
 import { Transactional } from "@backend/nestjs";
 import { Inject } from "@nestjs/common";
-import { InjectionToken } from '../InjectionToken';
-import { UserSessionRepository } from '../../domain/repository';
-import { UserSessionFactory } from '../../domain/factories/UserSession/UserSessionFactory';
-import { DeviceInfo, Id, TokenHash } from '../../domain/valueObjects';
-import { IJwtTokenService } from '../interface/JwtTokenService';
-import { ResponseOnCreateUserSession } from '../dto';
+import { ICommandHandler } from "@nestjs/cqrs";
 import { UserSession } from '../../domain/entities/UserSession';
+import { UserSessionFactory } from '../../domain/factories/UserSession/UserSessionFactory';
+import { UserSessionRepository } from '../../domain/repository';
+import { DeviceInfo, Id, TokenHash } from '../../domain/valueObjects';
+import { CreateUserSessionCommand } from '../command/CreateUserSessionCommand/CreateUserSessionCommand';
+import { ResponseOnCreateUserSession } from '../dto';
+import { InjectionToken } from '../InjectionToken';
+import { IJwtTokenService } from '../interface/JwtTokenService';
 
 export class CreateUserSessionCommandHandler implements ICommandHandler<CreateUserSessionCommand, ResponseOnCreateUserSession> {
     constructor(
@@ -43,14 +42,12 @@ export class CreateUserSessionCommandHandler implements ICommandHandler<CreateUs
             }
         } catch (error) {
             if (userSession) {
-                // Попытка удаления, если вдруг сессия была создана и сохранена до ошибки
-                await this.userSessionRepository.deleteById(session.id).catch(deleteError => {
-                    // Логируем ошибку удаления, но основная ошибка важнее
-                    console.error(`Failed to delete session ${session.id} from Redis during error cleanup`, deleteError);
+                const id = userSession.getId().getValue()
+                await this.userSessionRepository.deleteById(id).catch(deleteError => {
+                    console.error(`Failed to delete session ${id} from Redis during error cleanup`, deleteError);
                 });
             }
       
-            // Перебрасываем оригинальную ошибку
             console.error('Error during session creation:', error);
             throw new Error('Failed to create user session.');
         }

@@ -37,7 +37,6 @@ export interface TokenPair {
 }
 
 export interface User {
-  success: SuccessResponse | undefined;
   userData: UserData | undefined;
   tokenPair: TokenPair | undefined;
 }
