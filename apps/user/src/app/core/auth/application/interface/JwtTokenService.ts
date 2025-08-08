@@ -1,7 +1,7 @@
 import { UserData } from "@backend/grpc";
 
-export interface JwtTokenService {
+export interface IJwtTokenService {
     signAccessToken(payload: UserData, expiresIn: string): string;
     signRefreshToken(payload: UserData, expiresIn: string): string;
-    verifyToken<T>(token: string): T;
+    verifyToken(token: string): any;
 }

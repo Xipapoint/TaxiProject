@@ -46,6 +46,14 @@ export class UserSessionRepositoryImplement implements OnModuleInit, UserSession
     return entity ? await this.entityToModel(entity) : null;
   }
 
+  async deleteById(id: string): Promise<void> {
+    const entity: UserSessionEntity = await this
+      .selectUserProfile()
+      .where('user.id = :id', {id})
+      .getOne()
+    return entity ? await this.entityToModel(entity) : null;
+  }
+
   private modelToEntity(model: UserSession): UserSessionEntity {
     return {
         id: model.getId().getValue(),
