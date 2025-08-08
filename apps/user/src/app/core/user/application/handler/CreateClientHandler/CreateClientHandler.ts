@@ -1,4 +1,3 @@
-import { Transactional } from '@backend/nestjs';
 import { Inject } from '@nestjs/common';
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { PASSWORD_GENERATOR, PasswordGenerator } from '../../../../../libs/PasswordModule';

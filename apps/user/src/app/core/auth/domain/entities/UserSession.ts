@@ -1,8 +1,5 @@
 import { AggregateRoot } from "@nestjs/cqrs";
-import { DeviceInfo } from '../valueObjects/DeviceInfo/DeviceInfo';
-import { Id } from '../valueObjects/Id/Id';
-import { TokenHash } from '../valueObjects/TokenHash/TokenHash';
-import { ExpiresAt } from '../valueObjects/ExpiresAt/ExpiresAt';
+import { DeviceInfo, ExpiresAt, Id, TokenHash } from '../valueObjects';
 
 export type UserSessionEssentialProperties = Readonly<{
   readonly id: Id;
@@ -101,7 +98,6 @@ export class UserSession extends AggregateRoot implements IUser {
     if (!equals || isOtherRevoked || isOtherExpired)
       return true
     else return false
-
   }
 
   shouldInvalidateByDevice(otherDevice: DeviceInfo): boolean {

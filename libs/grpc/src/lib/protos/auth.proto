@@ -1,0 +1,49 @@
+syntax = "proto3";
+
+package auth;
+
+service AuthService {
+    rpc Authenticate(AuthenticateRequest) returns (SuccessResponse);
+    rpc CreateUserSession(CreateUserRequest) returns (User);
+}
+
+// SHARED !!!
+
+message UserData {
+    string userId = 1;
+}
+
+// REQUEST !!!
+
+message AuthenticateRequest {
+    string token = 1;
+}
+
+message DeviceInfo {
+  string device = 1;
+  string location = 2;
+  string ipAddress = 3;
+}
+
+message CreateUserRequest {
+    UserData userData = 1;
+    DeviceInfo deviceInfo = 2;
+}
+
+// RESPONSE !!!
+
+message SuccessResponse {
+    bool success = 1;
+}
+
+message TokenPair {
+    string refreshToken = 1;
+    string accessToken = 2;
+}
+
+message User {
+    SuccessResponse success = 1;
+    UserData userData = 2;
+    TokenPair tokenPair = 3;
+}
+

@@ -2,27 +2,27 @@ import { Inject } from '@nestjs/common';
 import { EventPublisher } from '@nestjs/cqrs';
 import { UserSession, UserSessionProperties } from '../../entities/UserSession';
 import { Id } from '../../valueObjects/Id/Id';
-import { TokenHash } from '../../valueObjects/TokenHash/TokenHash';
-import { DeviceInfo } from '../../valueObjects/DeviceInfo/DeviceInfo';
-import { ExpiresAt } from '../../valueObjects/ExpiresAt/ExpiresAt';
+import { DeviceInfo, ExpiresAt, TokenHash } from '../../valueObjects';
+
 
 type CreateUserSessionOptions = Readonly<{
   readonly id: Id;
   readonly userId: Id;
-  readonly refreshTokenHash: TokenHash;
+  readonly refreshToken: TokenHash;
   readonly deviceInfo: DeviceInfo;
-  isRevoked: boolean;
 }>;
 
 export class UserSessionFactory {
   @Inject(EventPublisher) private readonly eventPublisher: EventPublisher;
 
-  create(options: CreateUserSessionOptions) {
+  async create(options: CreateUserSessionOptions) {
     return this.eventPublisher.mergeObjectContext(
       new UserSession(
         {
           ...options,
           expiresAt: ExpiresAt.createOneWeekFromNow(),
+          refreshTokenHash: options.refreshToken,
+          isRevoked: false,
           createdAt: new Date(),
           lastUsedAt: new Date()
         }
