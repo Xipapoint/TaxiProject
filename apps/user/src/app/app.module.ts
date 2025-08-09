@@ -1,14 +1,14 @@
+import { DatabaseModule } from '@backend/database';
 import { LibNestjsModule, ModuleRefStore, RequestStorageMiddleware } from '@backend/nestjs';
 import { MiddlewareConsumer, Module, OnModuleInit } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { ClientEntity } from './core/user/infrastructure/entity';
-import { UserModule } from './core/user/user.module';
 import { ModuleRef } from '@nestjs/core';
-import { DatabaseModule } from '@backend/database';
+import { TypeOrmModule } from '@nestjs/typeorm';
 import { DatabaseOptions } from '../database-options';
-import { User } from './core/user/infrastructure/entity/User';
 import { AuthModule } from './core/auth/auth.module';
+import { ClientEntity } from './core/user/infrastructure/entity';
+import { User } from './core/user/infrastructure/entity/User';
+import { UserModule } from './core/user/user.module';
 
 @Module({
   imports: [
@@ -24,8 +24,9 @@ import { AuthModule } from './core/auth/auth.module';
         password: configService.get('POSTGRES_PASSWORD'),
         database: configService.get('POSTGRES_DB'),
         entities: [ClientEntity, User]
+      }),
     }),
-    }),
+
     UserModule,
     AuthModule,
     DatabaseModule.forRootAsync(async () => DatabaseOptions),

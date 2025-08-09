@@ -31,6 +31,11 @@ export interface SuccessResponse {
   success: boolean;
 }
 
+export interface Error {
+  errorMessage: string;
+  statusCode: number;
+}
+
 export interface TokenPair {
   refreshToken: string;
   accessToken: string;
@@ -41,16 +46,24 @@ export interface User {
   tokenPair: TokenPair | undefined;
 }
 
+export interface CreateUserSessionResponse {
+  success: boolean;
+  user?: User | undefined;
+  error?: Error | undefined;
+}
+
 export interface AuthServiceClient {
   authenticate(request: AuthenticateRequest): Observable<SuccessResponse>;
 
-  createUserSession(request: CreateUserRequest): Observable<User>;
+  createUserSession(request: CreateUserRequest): Observable<CreateUserSessionResponse>;
 }
 
 export interface AuthServiceController {
   authenticate(request: AuthenticateRequest): Promise<SuccessResponse> | Observable<SuccessResponse> | SuccessResponse;
 
-  createUserSession(request: CreateUserRequest): Promise<User> | Observable<User> | User;
+  createUserSession(
+    request: CreateUserRequest,
+  ): Promise<CreateUserSessionResponse> | Observable<CreateUserSessionResponse> | CreateUserSessionResponse;
 }
 
 export function AuthServiceControllerMethods() {

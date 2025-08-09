@@ -9,6 +9,7 @@ import { CreateUserSessionCommand } from '../command/create-user-session-command
 import { ResponseOnCreateUserSession } from '../dto';
 import { InjectionToken } from '../injection-token';
 import { IJwtTokenService } from '../interface/jwt-token-service.interface';
+import { RpcException } from "@nestjs/microservices";
 
 export class CreateUserSessionCommandHandler implements ICommandHandler<CreateUserSessionCommand, ResponseOnCreateUserSession> {
     constructor(
@@ -48,8 +49,7 @@ export class CreateUserSessionCommandHandler implements ICommandHandler<CreateUs
                 });
             }
       
-            console.error('Error during session creation:', error);
-            throw new Error('Failed to create user session.');
+            throw new RpcException(`Failed to create user session: ${error}`);
         }
     }
     

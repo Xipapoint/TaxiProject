@@ -4,7 +4,7 @@ package auth;
 
 service AuthService {
     rpc Authenticate(AuthenticateRequest) returns (SuccessResponse);
-    rpc CreateUserSession(CreateUserRequest) returns (User);
+    rpc CreateUserSession(CreateUserRequest) returns (CreateUserSessionResponse);
 }
 
 // SHARED !!!
@@ -36,6 +36,11 @@ message SuccessResponse {
     bool success = 1;
 }
 
+message Error {
+    string errorMessage = 1;
+    int32 statusCode = 2;
+}
+
 message TokenPair {
     string refreshToken = 1;
     string accessToken = 2;
@@ -46,3 +51,10 @@ message User {
     TokenPair tokenPair = 2;
 }
 
+message CreateUserSessionResponse {
+    bool success = 1;
+    oneof result {
+        User user = 2;
+        Error error = 3;
+    }
+}

@@ -10,11 +10,13 @@ import { GrpcOptions, Transport } from '@nestjs/microservices';
 import { Packages } from '@backend/grpc';
 import { join } from 'path';
 import { ConfigService } from '@nestjs/config';
+import { SuccessResponseInterceptor } from '@backend/nestjs';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const globalPrefix = 'api';
   app.setGlobalPrefix(globalPrefix);
+  app.useGlobalInterceptors(new SuccessResponseInterceptor())
   app.connectMicroservice<GrpcOptions>({
     transport: Transport.GRPC,
     options: {
@@ -25,6 +27,7 @@ async function bootstrap() {
   })
   const port = process.env.PORT || 3000;
   await app.listen(port);
+  await app.startAllMicroservices();
   Logger.log(
     `🚀 Application is running on: http://localhost:${port}/${globalPrefix}`
   );
