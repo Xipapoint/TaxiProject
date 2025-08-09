@@ -2,13 +2,13 @@ import { Transactional } from "@backend/nestjs";
 import { Inject } from "@nestjs/common";
 import { ICommandHandler } from "@nestjs/cqrs";
 import { UserSession } from '../../domain/entities/UserSession';
-import { UserSessionFactory } from '../../domain/factories/UserSession/UserSessionFactory';
+import { UserSessionFactory } from '../../domain/factories/user-session/user-session.factory';
 import { UserSessionRepository } from '../../domain/repository';
 import { DeviceInfo, Id, TokenHash } from '../../domain/valueObjects';
-import { CreateUserSessionCommand } from '../command/CreateUserSessionCommand/CreateUserSessionCommand';
+import { CreateUserSessionCommand } from '../command/create-user-session-command/create-user-session-command';
 import { ResponseOnCreateUserSession } from '../dto';
-import { InjectionToken } from '../InjectionToken';
-import { IJwtTokenService } from '../interface/JwtTokenService';
+import { InjectionToken } from '../injection-token';
+import { IJwtTokenService } from '../interface/jwt-token-service.interface';
 
 export class CreateUserSessionCommandHandler implements ICommandHandler<CreateUserSessionCommand, ResponseOnCreateUserSession> {
     constructor(

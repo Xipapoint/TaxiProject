@@ -2,31 +2,31 @@ import { UserData } from '@backend/grpc';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
-import { IJwtTokenService } from '../../application/interface/JwtTokenService';
+import { IJwtTokenService } from '../../application/interface/jwt-token-service.interface';
 @Injectable()
 export class JwtTokenService implements IJwtTokenService {
   private readonly accessTokenSecret: string;
-  private readonly accessTokenTtl: number;
+  private readonly accessTokenTtl: string;
   private readonly refreshTokenSecret: string;
-  private readonly refreshTokenTtl: number;
+  private readonly refreshTokenTtl: string;
 
   constructor(
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
   ) {
-    this.accessTokenSecret = this.configService.get<string>('JWT_ACCESS_SECRET');
-    this.accessTokenTtl = this.configService.get<number>('JWT_ACCESS_TTL');
-    this.refreshTokenSecret = this.configService.get<string>('JWT_REFRESH_SECRET');
-    this.refreshTokenTtl = this.configService.get<number>('JWT_REFRESH_TTL');
+    this.accessTokenSecret = this.configService.getOrThrow<string>('JWT_ACCESS_SECRET');
+    this.accessTokenTtl = this.configService.getOrThrow<string>('JWT_ACCESS_TTL');
+    this.refreshTokenSecret = this.configService.getOrThrow<string>('JWT_REFRESH_SECRET');
+    this.refreshTokenTtl = this.configService.getOrThrow<string>('JWT_REFRESH_TTL');
   }
-    signAccessToken(payload: UserData, expiresIn: string): string {
+    signAccessToken(payload: UserData, expiresIn: string = this.accessTokenTtl): string {
         return this.jwtService.sign(payload, {
             secret: this.accessTokenSecret,
             expiresIn,
         });
     }
 
-    signRefreshToken(payload: UserData, expiresIn: string): string {
+    signRefreshToken(payload: UserData, expiresIn: string = this.refreshTokenTtl): string {
         return this.jwtService.sign(payload, {
             secret: this.refreshTokenSecret,
             expiresIn,

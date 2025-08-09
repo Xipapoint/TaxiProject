@@ -8,6 +8,7 @@ import { ModuleRef } from '@nestjs/core';
 import { DatabaseModule } from '@backend/database';
 import { DatabaseOptions } from '../database-options';
 import { User } from './core/user/infrastructure/entity/User';
+import { AuthModule } from './core/auth/auth.module';
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { User } from './core/user/infrastructure/entity/User';
     }),
     }),
     UserModule,
+    AuthModule,
     DatabaseModule.forRootAsync(async () => DatabaseOptions),
     LibNestjsModule.forRootAsync(async () => DatabaseOptions),
   ],

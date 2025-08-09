@@ -3,7 +3,7 @@ import { DynamicModule, Module } from '@nestjs/common';
 import { DataSourceOptions } from 'typeorm';
 import { NestjsInjectionToken } from './enums';
 import { CatchFilter } from './filters/CatchFilter/CatchFilter';
-import { TransactionalInterceptor } from './interceptors';
+import { SuccessResponseInterceptor, TransactionalInterceptor } from './interceptors';
 import { RequestStorageMiddleware } from './request-storage/middleware/request-storage.middleware';
 
 @Module({})
@@ -25,12 +25,17 @@ export class LibNestjsModule {
         {
           provide: NestjsInjectionToken.REQUEST_STORAGE_MIDDLEWARE,
           useClass: RequestStorageMiddleware
+        },
+        {
+          provide: NestjsInjectionToken.ADD_SUCCESS_FIELD_INTERCEPTOR,
+          useClass: SuccessResponseInterceptor
         }
       ],
       exports: [
         NestjsInjectionToken.CATCH_FILTER,
         NestjsInjectionToken.TRANSACTIONAL_INTERCEPTOR,
-        NestjsInjectionToken.REQUEST_STORAGE_MIDDLEWARE
+        NestjsInjectionToken.REQUEST_STORAGE_MIDDLEWARE,
+        NestjsInjectionToken.ADD_SUCCESS_FIELD_INTERCEPTOR
       ],
       module: LibNestjsModule,
     };

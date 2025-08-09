@@ -1,1 +1,1 @@
-export * from './UserSession/UserSessionFactory'
+export * from './user-session/user-session.factory'

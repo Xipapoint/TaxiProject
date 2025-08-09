@@ -1,1 +1,1 @@
-export * from './CreateUserSessionCommand/CreateUserSessionCommand'
+export * from './create-user-session-command/create-user-session-command'

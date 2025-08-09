@@ -1,33 +1,32 @@
-import { PostgresErrorCode, ConflictError } from "@backend/nestjs";
-import { Injectable, OnModuleInit, Inject } from "@nestjs/common";
-
-import { QueryRunner, EntityManager, DataSource } from "typeorm";
-import { UserSessionFactory } from '../../domain/factories';
+import { ConflictError, PostgresErrorCode } from "@backend/nestjs";
+import { RedisClient } from "@backend/redis";
+import { Inject, Injectable } from "@nestjs/common";
 import { UserSession } from '../../domain/entities/UserSession';
-import { UserSessionEntity } from '../entity/UserSessionEntity';
+import { UserSessionFactory } from '../../domain/factories';
+import { UserSessionCacheRepository } from '../../domain/repository';
 import { DeviceInfo, ExpiresAt, Id, TokenHash } from '../../domain/valueObjects';
-import { UserSessionRepository } from '../../domain/repository';
+import { UserSessionEntity } from '../entity/UserSessionEntity';
 
 @Injectable()
-export class UserSessionRepositoryImplement implements OnModuleInit, UserSessionRepository {
-  @Inject() private readonly userSessionFactory: UserSessionFactory;
-  private writeConnection: QueryRunner
-  private readConnection: EntityManager;
+export class UserSessionCacheRepositoryImplement implements UserSessionCacheRepository {
+  @Inject() private readonly сlientFactory: UserSessionFactory;
   
   constructor(
-    private readonly dataSource: DataSource
+    private readonly redisClient: RedisClient
   ) {}
 
-  onModuleInit() {
-    this.writeConnection = this.dataSource.createQueryRunner();
-    this.readConnection = this.dataSource.manager;
+  private getKey(id: string): string {
+    return `user-session:${id}`;
   }
 
-  async save(data: UserSession | UserSession[]): Promise<void> {
+  async save(session: UserSession): Promise<void> {
     try {
-      const models = Array.isArray(data) ? data : [data];
-      const entities = models.map((model) => this.modelToEntity(model));
-      await this.writeConnection.manager.getRepository(UserSessionEntity).save(entities);
+      const key = this.getKey(session.getId().getValue());
+      const expiresAt = session.getExpiresAt().getValue()
+      const ttl = (expiresAt.getTime() - Date.now()) / 1000
+      if (ttl > 0) {
+        await this.redisClient.set(key, JSON.stringify(session.getRefreshTokenHash().getValue()), Math.ceil(ttl));
+      }
     } catch (error) {
       if (error?.code === PostgresErrorCode.UniqueViolation)
         throw new ConflictError('Client with this phone number or email already exists');
@@ -35,23 +34,18 @@ export class UserSessionRepositoryImplement implements OnModuleInit, UserSession
     }
   }
 
-  private createQueryBuilder() {
-    return this.writeConnection.manager.createQueryBuilder()
-  }
-
   async findById(id: string): Promise<UserSession | null> {
-    const entity = await this
-      .createQueryBuilder()
-      .where('id = :id', {id})
-      .getOne()
-    return entity ? await this.entityToModel(entity) : null;
+    const key = this.getKey(id);
+    const data = await this.redisClient.get(key);
+    if (!data) {
+      return null;
+    }
+    return await this.entityToModel(JSON.parse(data));
   }
-
+  
   async deleteById(id: string): Promise<void> {
-    this
-      .createQueryBuilder()
-      .where('id = :id', {id})
-      .delete()
+    const key = this.getKey(id);
+    await this.redisClient.del(key);
   }
 
   private modelToEntity(model: UserSession): UserSessionEntity {
@@ -69,7 +63,7 @@ export class UserSessionRepositoryImplement implements OnModuleInit, UserSession
 
   private async entityToModel(entity: UserSessionEntity): Promise<UserSession> {
     const { device, ipAddress, location } = entity.deviceInfo
-    return this.userSessionFactory.reconstitute({
+    return this.сlientFactory.reconstitute({
         id: new Id(entity.id),
         userId: new Id(entity.userId),
         refreshTokenHash: await TokenHash.create(entity.refreshTokenHash),

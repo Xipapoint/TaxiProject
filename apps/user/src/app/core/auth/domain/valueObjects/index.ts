@@ -1,4 +1,4 @@
-export * from './DeviceInfo/DeviceInfo'
-export * from './ExpiresAt/ExpiresAt'
+export * from './device-info/device-info'
+export * from './expires-at/expires-at'
 export * from './Id/Id'
-export * from './TokenHash/TokenHash'
+export * from './token-hash/token-hash'

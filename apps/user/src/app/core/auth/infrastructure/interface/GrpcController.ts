@@ -3,7 +3,7 @@ import { Controller } from "@nestjs/common";
 import { Observable } from "rxjs";
 import { ResponseOnCreateUserSession } from '../../application/dto';
 import { CommandBus, QueryBus } from "@nestjs/cqrs";
-import { CreateUserSessionCommand } from '../../application/command/CreateUserSessionCommand/CreateUserSessionCommand';
+import { CreateUserSessionCommand } from '../../application/command/create-user-session-command/create-user-session-command';
 
 @Controller()
 @AuthServiceControllerMethods()
