@@ -1,5 +1,6 @@
 import { AggregateRoot } from "@nestjs/cqrs";
 import { DeviceInfo, ExpiresAt, Id, TokenHash } from '../valueObjects';
+import { SessionRevokedEvent } from '../event/session-revoked.event';
 
 export type UserSessionEssentialProperties = Readonly<{
   readonly id: Id;
@@ -8,6 +9,7 @@ export type UserSessionEssentialProperties = Readonly<{
   readonly deviceInfo: DeviceInfo;
   isRevoked: boolean;
   readonly expiresAt: ExpiresAt;
+  version: number
 }>;
 
 export type UserSessionOptionalProperties = Readonly<
@@ -37,6 +39,7 @@ export class UserSession extends AggregateRoot implements IUser {
   private readonly createdAt: Date;
   private readonly expiresAt: ExpiresAt;
   private lastUsedAt: Date;
+  private version: number
   
   constructor(properties: UserSessionProperties) {
     super();
@@ -75,6 +78,10 @@ export class UserSession extends AggregateRoot implements IUser {
     return this.lastUsedAt;
   }
 
+  getVersion() {
+    return this.version
+  }
+
   setIsRevoked(isRevoked: boolean): void {
     this.isRevoked = isRevoked;
   }
@@ -86,16 +93,23 @@ export class UserSession extends AggregateRoot implements IUser {
     return this.id.equals(new Id(id));
   }
 
-  revoke() {
+  revoke(reason?: string) {
     this.setIsRevoked(true)
+
   };
+
+  setVersion(version: number) {
+    this.version = version
+    this.apply(new SessionRevokedEvent(this.getId().getValue()))
+  }
 
   shouldInvalidate(userSession: UserSession): boolean {
     const otherRefreshToken = userSession.getRefreshTokenHash()
     const isOtherRevoked = userSession.getIsRevoked()
     const isOtherExpired = userSession.expiresAt.getValue() < new Date()
-    const equals = this.refreshTokenHash.equals(otherRefreshToken)
-    if (!equals || isOtherRevoked || isOtherExpired)
+    const equals = this.refreshTokenHash.matches(otherRefreshToken.getValue())
+    const isSessionOld = (this.getVersion() % userSession.getVersion()) > 1
+    if (!equals || isOtherRevoked || isOtherExpired || !isSessionOld)
       return true
     else return false
   }

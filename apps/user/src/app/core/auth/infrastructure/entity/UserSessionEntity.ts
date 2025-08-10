@@ -68,4 +68,10 @@ export class UserSessionEntity {
   })
   @Column({ type: 'timestamptz', nullable: true })
   lastUsedAt?: Date;
+
+  @ApiProperty({
+    description: 'Version of user session',
+  })
+  @Column()
+  version: number;
 }

@@ -47,6 +47,14 @@ export class UserSessionRepositoryImplement implements OnModuleInit, UserSession
     return entity ? await this.entityToModel(entity) : null;
   }
 
+  async findByRefreshToken(refreshToken: string): Promise<UserSession | null> {
+    const entity = await this
+      .createQueryBuilder()
+      .where('refreshToken = :refreshToken', {refreshToken})
+      .getOne()
+    return entity ? await this.entityToModel(entity) : null;
+  }
+
   async deleteById(id: string): Promise<void> {
     this
       .createQueryBuilder()
@@ -63,7 +71,8 @@ export class UserSessionRepositoryImplement implements OnModuleInit, UserSession
         isRevoked: model.getIsRevoked(),
         createdAt: model.getCreatedAt(),
         lastUsedAt: model.getLastUsedAt(),
-        expiresAt: model.getExpiresAt().getValue()
+        expiresAt: model.getExpiresAt().getValue(),
+        version: model.getVersion()
     };
   }
 
@@ -78,6 +87,7 @@ export class UserSessionRepositoryImplement implements OnModuleInit, UserSession
         createdAt: entity.createdAt,
         lastUsedAt: entity.lastUsedAt,
         expiresAt: ExpiresAt.createOneWeekFromNow(),
+        version: entity.version,
   });
   }
 }

@@ -40,7 +40,7 @@ export class UserSessionCacheRepositoryImplement implements UserSessionCacheRepo
     if (!data) {
       return null;
     }
-    return await this.entityToModel(JSON.parse(data));
+    return await JSON.parse(data);
   }
   
   async deleteById(id: string): Promise<void> {
@@ -57,7 +57,8 @@ export class UserSessionCacheRepositoryImplement implements UserSessionCacheRepo
         isRevoked: model.getIsRevoked(),
         createdAt: model.getCreatedAt(),
         lastUsedAt: model.getLastUsedAt(),
-        expiresAt: model.getExpiresAt().getValue()
+        expiresAt: model.getExpiresAt().getValue(),
+        version: model.getVersion()
     };
   }
 
@@ -72,6 +73,7 @@ export class UserSessionCacheRepositoryImplement implements UserSessionCacheRepo
         createdAt: entity.createdAt,
         lastUsedAt: entity.lastUsedAt,
         expiresAt: ExpiresAt.createOneWeekFromNow(),
+        version: entity.version
   });
   }
 }

@@ -9,6 +9,8 @@ import { RedisModule } from "@backend/redis";
 import { JwtTokenService } from './infrastructure/services/JwtTokenService';
 import { JwtModule } from "@nestjs/jwt";
 import { ConfigModule, ConfigService } from "@nestjs/config";
+import { JwtAccessTokenStrategy } from "./infrastructure/strategies/JwtAccessTokenStrategy";
+import { JwtRefreshTokenStrategy } from './infrastructure/strategies/JwtRefreshTokenStrategy';
 
 const domain = [UserSessionFactory]
 
@@ -29,7 +31,7 @@ const application = [
 
 @Module({
     controllers: [AuthGrpcController],
-    providers: [Logger, ...domain, ...infrastructure, ...application],
+    providers: [Logger, JwtAccessTokenStrategy, JwtRefreshTokenStrategy, ...domain, ...infrastructure, ...application],
     imports: [
         CqrsModule, 
         RedisModule,

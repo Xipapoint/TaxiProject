@@ -5,11 +5,11 @@ import { Strategy, ExtractJwt } from "passport-jwt";
 import { TokenPayload } from '../dto';
 
 @Injectable()
-export class JwtStrategy extends PassportStrategy(Strategy) {
+export class JwtRefreshTokenStrategy extends PassportStrategy(Strategy) {
   constructor(configService: ConfigService) {
     super({
       jwtFromRequest: ExtractJwt.fromExtractors([
-        (request: any) => request.cookies?.Authentication || request.token,
+        (request: any) => request.cookies?.Refresh || request.token,
       ]),
       secretOrKey: configService.get('JWT_SECRET'),
     });

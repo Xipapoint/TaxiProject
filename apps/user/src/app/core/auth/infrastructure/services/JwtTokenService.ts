@@ -2,7 +2,7 @@ import { UserData } from '@backend/grpc';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
-import { IJwtTokenService } from '../../application/interface/jwt-token-service.interface';
+import { IJwtTokenService } from '../../application/interface/jwt-token-service/jwt-token-service.interface';
 @Injectable()
 export class JwtTokenService implements IJwtTokenService {
   private readonly accessTokenSecret: string;

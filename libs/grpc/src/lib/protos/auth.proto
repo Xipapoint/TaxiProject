@@ -5,6 +5,7 @@ package auth;
 service AuthService {
     rpc Authenticate(AuthenticateRequest) returns (SuccessResponse);
     rpc CreateUserSession(CreateUserRequest) returns (CreateUserSessionResponse);
+    rpc RefreshTokens(RefreshTokenRequest) returns (TokenPair);
 }
 
 // SHARED !!!
@@ -57,4 +58,10 @@ message CreateUserSessionResponse {
         User user = 2;
         Error error = 3;
     }
+}
+
+message RefreshTokenRequest {
+    UserData userData = 1;
+    DeviceInfo deviceInfo = 2;
+    TokenPair tokens = 3;
 }

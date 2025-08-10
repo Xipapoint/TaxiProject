@@ -10,6 +10,7 @@ type CreateUserSessionOptions = Readonly<{
   readonly userId: Id;
   readonly refreshToken: TokenHash;
   readonly deviceInfo: DeviceInfo;
+  version: number
 }>;
 
 export class UserSessionFactory {
@@ -24,7 +25,7 @@ export class UserSessionFactory {
           refreshTokenHash: options.refreshToken,
           isRevoked: false,
           createdAt: new Date(),
-          lastUsedAt: new Date()
+          lastUsedAt: new Date(),
         }
       ),
     );
