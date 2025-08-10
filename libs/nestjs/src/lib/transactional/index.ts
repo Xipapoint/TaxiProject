@@ -1,2 +1,2 @@
 export * from './decorator/Transactional'
-export * from './transactional-service/TransactionalService'
+export * from './query-runner-manager/query-runner-manager'

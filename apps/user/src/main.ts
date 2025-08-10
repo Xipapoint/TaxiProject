@@ -22,7 +22,7 @@ async function bootstrap() {
     options: {
       url: app.get(ConfigService).getOrThrow('AUTH_GRPC_SERVICE_URL'),
       package: Packages.AUTH,
-      protoPath: join(__dirname, "**", "**", 'libs', 'grpc', 'src', 'lib', 'protos', 'auth.proto'),
+      protoPath: join(__dirname, '..', 'user', 'protos', 'auth.proto'),
     }
   })
   const port = process.env.PORT || 3000;

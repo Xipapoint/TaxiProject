@@ -33,13 +33,9 @@ import { UserModule } from './core/user/user.module';
     LibNestjsModule.forRootAsync(async () => DatabaseOptions),
   ],
 })
-export class AppModule implements OnModuleInit {
+export class AppModule {
   constructor(private readonly moduleRef: ModuleRef) {}
   configure(consumer: MiddlewareConsumer) {
     consumer.apply(RequestStorageMiddleware).forRoutes('*');
-  }
-
-  onModuleInit() {
-    ModuleRefStore.set(this.moduleRef);
   }
 }

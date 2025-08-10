@@ -1,7 +1,8 @@
 const { NxAppWebpackPlugin } = require('@nx/webpack/app-plugin');
 const { join } = require('path');
-
+const CopyWebpackPlugin = require('copy-webpack-plugin');
 module.exports = {
+  devtool: 'source-map',
   output: {
     path: join(__dirname, '../../dist/apps/user'),
   },
@@ -15,6 +16,11 @@ module.exports = {
       optimization: false,
       outputHashing: 'none',
       generatePackageJson: true,
+    }),
+    new CopyWebpackPlugin({
+      patterns: [
+        { from: '../../libs/grpc/src/lib/protos', to: 'protos' }
+      ],
     }),
   ],
 };

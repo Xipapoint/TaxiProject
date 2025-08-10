@@ -33,16 +33,7 @@ const application = [
     imports: [
         CqrsModule, 
         RedisModule,
-        JwtModule.registerAsync({
-            imports: [ConfigModule],
-            useFactory: (configService: ConfigService) => ({
-                secret: configService.getOrThrow('JWT_SECRET'),
-                signOptions: {
-                expiresIn: configService.getOrThrow('JWT_EXPIRATION_MS'),
-                },
-            }),
-            inject: [ConfigService],
-        }),
+        JwtModule
     ]
 })
 export class AuthModule {}

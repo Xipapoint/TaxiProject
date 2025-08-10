@@ -1,6 +1,6 @@
-import { Transactional } from "@backend/nestjs";
-import { Inject } from "@nestjs/common";
-import { ICommandHandler } from "@nestjs/cqrs";
+import { NestjsInjectionToken, QueryRunnerManager, RequestStorageImplement, RequestStorageInstance, Transactional } from "@backend/nestjs";
+import { Inject, OnModuleInit } from "@nestjs/common";
+import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
 import { UserSession } from '../../domain/entities/UserSession';
 import { UserSessionFactory } from '../../domain/factories/user-session/user-session.factory';
 import { UserSessionRepository } from '../../domain/repository';
@@ -10,7 +10,9 @@ import { ResponseOnCreateUserSession } from '../dto';
 import { InjectionToken } from '../injection-token';
 import { IJwtTokenService } from '../interface/jwt-token-service.interface';
 import { RpcException } from "@nestjs/microservices";
+import { QueryRunner } from 'typeorm';
 
+@CommandHandler(CreateUserSessionCommand)
 export class CreateUserSessionCommandHandler implements ICommandHandler<CreateUserSessionCommand, ResponseOnCreateUserSession> {
     constructor(
         @Inject(InjectionToken.USER_SESSION_REPOSITORY)
@@ -18,9 +20,9 @@ export class CreateUserSessionCommandHandler implements ICommandHandler<CreateUs
         @Inject()
         private readonly userSessionFactory: UserSessionFactory,
         @Inject(InjectionToken.JWT_TOKEN_SERVICE)
-        private readonly jwtTokenService: IJwtTokenService
+        private readonly jwtTokenService: IJwtTokenService,
     ) {}
-    @Transactional()
+
     async execute(command: CreateUserSessionCommand): Promise<ResponseOnCreateUserSession> {
         let userSession: UserSession | undefined;
         try {

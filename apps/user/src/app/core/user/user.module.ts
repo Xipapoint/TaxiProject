@@ -11,6 +11,9 @@ import { Packages } from "@backend/grpc";
 import { ConfigService } from "@nestjs/config";
 import { ClientsModule, Transport } from "@nestjs/microservices";
 import { join } from "path";
+import { DatabaseModule } from "@backend/database";
+import { LibNestjsModule } from "@backend/nestjs";
+import { DatabaseOptions } from "../../../database-options";
 
 const domain = [ClientFactory]
 
@@ -42,13 +45,14 @@ const application = [
             options: {
               url: configService.getOrThrow('AUTH_GRPC_SERVICE_URL'),
               package: Packages.AUTH,
-              protoPath: join(__dirname, "**", "**", 'libs', 'grpc', 'src', 'lib', 'protos', 'auth.proto'),
+              protoPath: join(__dirname, "..", 'user', 'protos', 'auth.proto'),
             },
           }),
           inject: [ConfigService],
         },
       ]),
-
+      DatabaseModule.forRootAsync(async () => DatabaseOptions),
+      LibNestjsModule.forRootAsync(async () => DatabaseOptions),
     ],
     controllers: [ClientController],
     providers: [Logger, ...domain, ...infrastructure, ...application],
