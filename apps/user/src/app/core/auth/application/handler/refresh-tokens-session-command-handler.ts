@@ -2,13 +2,13 @@ import { Transactional } from '@backend/nestjs';
 import { RefreshTokensSessionCommand } from '../command';
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { TokenPair } from '@backend/grpc';
-import { UserSessionCacheRepository } from '../../domain/repository/UserSession/UserSessionCacheRepository';
+import { IUserSessionCacheRepository } from '../../domain/repository/UserSession/IUserSessionCacheRepository';
 import { Inject } from '@nestjs/common';
 import { InjectionToken } from '../injection-token';
 import { IJwtTokenService } from '../interface';
 import { UserSessionFactory } from '../../domain/factories';
 import { TokenHash, DeviceInfo, Id } from '../../domain/valueObjects';
-import { UserSessionRepository } from '../../domain/repository/UserSession/UserSessionRepository';
+import { IUserSessionRepository } from '../../domain/repository/UserSession/IUserSessionRepository';
 import { IUserSessionService } from '../interface';
 import { RpcException } from '@nestjs/microservices';
 
@@ -16,9 +16,9 @@ import { RpcException } from '@nestjs/microservices';
 export class RefreshTokensSessionCommandHandler implements ICommandHandler<RefreshTokensSessionCommand, TokenPair> {
         constructor(
             @Inject(InjectionToken.USER_SESSION_CACHE_REPOSITORY)
-            private readonly userSessionCacheRepository: UserSessionCacheRepository,
+            private readonly userSessionCacheRepository: IUserSessionCacheRepository,
             @Inject(InjectionToken.USER_SESSION_REPOSITORY)
-            private readonly userSessionRepository: UserSessionRepository,
+            private readonly userSessionRepository: IUserSessionRepository,
             @Inject()
             private readonly userSessionFactory: UserSessionFactory,
             @Inject(InjectionToken.JWT_TOKEN_SERVICE)
@@ -28,9 +28,9 @@ export class RefreshTokensSessionCommandHandler implements ICommandHandler<Refre
 
     @Transactional()
     async execute(command: RefreshTokensSessionCommand): Promise<TokenPair> {
-        const {deviceInfo, tokens, userData} = command.props
-        const { device, location, ipAddress } = deviceInfo
-        const { refreshToken, accessToken } = tokens
+        const {data, tokens} = command.props
+        const { userData, deviceInfo } = data
+        const { refreshToken } = tokens
 
         const userSession = await this.userSessionCacheRepository.findById(userData.userId)
         if (!userSession) throw new RpcException('Session not found');

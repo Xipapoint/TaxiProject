@@ -3,12 +3,12 @@ import { RedisClient } from "@backend/redis";
 import { Inject, Injectable } from "@nestjs/common";
 import { UserSession } from '../../domain/entities/UserSession';
 import { UserSessionFactory } from '../../domain/factories';
-import { UserSessionCacheRepository } from '../../domain/repository';
+import { IUserSessionCacheRepository } from '../../domain/repository';
 import { DeviceInfo, ExpiresAt, Id, TokenHash } from '../../domain/valueObjects';
 import { UserSessionEntity } from '../entity/UserSessionEntity';
 
 @Injectable()
-export class UserSessionCacheRepositoryImplement implements UserSessionCacheRepository {
+export class UserSessionCacheRepositoryImplement implements IUserSessionCacheRepository {
   @Inject() private readonly сlientFactory: UserSessionFactory;
   
   constructor(

@@ -8,11 +8,16 @@
 import { GrpcMethod, GrpcStreamMethod } from "@nestjs/microservices";
 import { Observable } from "rxjs";
 
+export interface TokenPair {
+  refreshToken: string;
+  accessToken: string;
+}
+
 export interface UserData {
   userId: string;
 }
 
-export interface AuthenticateRequest {
+export interface TokenRequest {
   token: string;
 }
 
@@ -22,58 +27,62 @@ export interface DeviceInfo {
   ipAddress: string;
 }
 
-export interface CreateUserRequest {
+export interface UserDataWithDeviceRequest {
   userData: UserData | undefined;
   deviceInfo: DeviceInfo | undefined;
 }
 
-export interface SuccessResponse {
-  success: boolean;
+export interface TokensAndDataRequest {
+  data: UserDataWithDeviceRequest | undefined;
+  tokens: TokenPair | undefined;
 }
 
+/** RESPONSE !!! */
 export interface Error {
   errorMessage: string;
   statusCode: number;
 }
 
-export interface TokenPair {
-  refreshToken: string;
-  accessToken: string;
-}
-
-export interface User {
+export interface UserAndTokensResponse {
   userData: UserData | undefined;
   tokenPair: TokenPair | undefined;
 }
 
-export interface CreateUserSessionResponse {
+export interface SuccessResponse {
   success: boolean;
-  user?: User | undefined;
   error?: Error | undefined;
 }
 
-export interface RefreshTokenRequest {
-  userData: UserData | undefined;
-  deviceInfo: DeviceInfo | undefined;
-  tokens: TokenPair | undefined;
+export interface CreateUserSessionResponse {
+  success: boolean;
+  data?: UserAndTokensResponse | undefined;
+  error?: Error | undefined;
+}
+
+export interface RefreshTokensResponse {
+  success: boolean;
+  data?: TokenPair | undefined;
+  error?: Error | undefined;
 }
 
 export interface AuthServiceClient {
-  authenticate(request: AuthenticateRequest): Observable<SuccessResponse>;
+  authenticate(request: TokensAndDataRequest): Observable<SuccessResponse>;
 
-  createUserSession(request: CreateUserRequest): Observable<CreateUserSessionResponse>;
+  createUserSession(request: UserDataWithDeviceRequest): Observable<CreateUserSessionResponse>;
 
-  refreshTokens(request: RefreshTokenRequest): Observable<TokenPair>;
+  refreshTokens(request: TokensAndDataRequest): Observable<RefreshTokensResponse>;
 }
 
 export interface AuthServiceController {
-  authenticate(request: AuthenticateRequest): Promise<SuccessResponse> | Observable<SuccessResponse> | SuccessResponse;
+  authenticate(request: TokensAndDataRequest): Promise<SuccessResponse> | Observable<SuccessResponse> | SuccessResponse;
 
   createUserSession(
-    request: CreateUserRequest,
+    request: UserDataWithDeviceRequest,
   ): Promise<CreateUserSessionResponse> | Observable<CreateUserSessionResponse> | CreateUserSessionResponse;
 
-  refreshTokens(request: RefreshTokenRequest): Promise<TokenPair> | Observable<TokenPair> | TokenPair;
+  refreshTokens(
+    request: TokensAndDataRequest,
+  ): Promise<RefreshTokensResponse> | Observable<RefreshTokensResponse> | RefreshTokensResponse;
 }
 
 export function AuthServiceControllerMethods() {

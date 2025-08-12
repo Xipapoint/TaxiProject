@@ -6,10 +6,10 @@ import { UserSessionFactory } from '../../domain/factories';
 import { UserSession } from '../../domain/entities/UserSession';
 import { UserSessionEntity } from '../entity/UserSessionEntity';
 import { DeviceInfo, ExpiresAt, Id, TokenHash } from '../../domain/valueObjects';
-import { UserSessionRepository } from '../../domain/repository';
+import { IUserSessionRepository } from '../../domain/repository';
 
 @Injectable()
-export class UserSessionRepositoryImplement implements OnModuleInit, UserSessionRepository {
+export class UserSessionRepositoryImplement implements OnModuleInit, IUserSessionRepository {
   @Inject() private readonly userSessionFactory: UserSessionFactory;
   private writeConnection: QueryRunner
   private readConnection: EntityManager;

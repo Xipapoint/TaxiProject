@@ -1,46 +1,45 @@
-import { UserData, DeviceInfo } from "@backend/grpc";
-import { Injectable, Inject } from "@nestjs/common";
+import { DeviceInfo, UserData } from "@backend/grpc";
+import { Inject, Injectable } from "@nestjs/common";
 import { InjectionToken } from '../../application/injection-token';
-import { UserSessionFactory } from '../../domain/factories';
-import { UserSessionCacheRepository } from '../../domain/repository/UserSession/UserSessionCacheRepository';
-import { UserSession } from '../../domain/entities/UserSession';
-import { DeviceInfo as DeviceInfoVO, Id, TokenHash } from '../../domain/valueObjects';
-import { UserSessionRepository } from '../../domain/repository/UserSession/UserSessionRepository';
+import { IUserSessionPersistanceService, IUserSessionTokensService } from '../../application/interface';
 import { IUserSessionService } from '../../application/interface/user-session-service/user-session-service.interface';
-import { IJwtTokenService } from '../../application/interface/jwt-token-service/jwt-token-service.interface';
+import { UserSession } from '../../domain/entities/UserSession';
+import { UserSessionFactory } from '../../domain/factories';
+import { IUserSessionCacheRepository } from '../../domain/repository/UserSession/IUserSessionCacheRepository';
+import { IUserSessionRepository } from '../../domain/repository/UserSession/IUserSessionRepository';
+import { DeviceInfo as DeviceInfoVO, Id, TokenHash } from '../../domain/valueObjects';
 
 
 @Injectable()
-class UserSessionService implements IUserSessionService {
+export class UserSessionService implements IUserSessionService {
     constructor(
         @Inject(InjectionToken.USER_SESSION_CACHE_REPOSITORY)
-        private readonly userSessionCacheRepository: UserSessionCacheRepository,
+        private readonly userSessionCacheRepository: IUserSessionCacheRepository,
         @Inject(InjectionToken.USER_SESSION_REPOSITORY)
-        private readonly userSessionRepository: UserSessionRepository,
+        private readonly userSessionRepository: IUserSessionRepository,
         @Inject()
         private readonly userSessionFactory: UserSessionFactory,
-        @Inject(InjectionToken.JWT_TOKEN_SERVICE)
-        private readonly jwtTokenService: IJwtTokenService,
+        @Inject(InjectionToken.USER_SESSION_PERSISTANCE_SERVICE)
+        private readonly persistence: IUserSessionPersistanceService,
+
+        @Inject(InjectionToken.TOKEN_SERVICE)
+        private readonly tokensService: IUserSessionTokensService
     ) {}
 
     async createSession(userData: UserData, deviceInfo: DeviceInfo) {
         let session: UserSession
         try {
-            const refreshToken = this.jwtTokenService.signRefreshToken(userData, "7d");
-    
-            const hashedToken = await TokenHash.create(refreshToken);
+            const { accessToken, refreshToken } = this.tokensService.generateTokens(userData)
     
             session = await this.userSessionFactory.create({
                 id: new Id(),
                 userId: new Id(userData.userId),
                 deviceInfo: new DeviceInfoVO(deviceInfo.device, deviceInfo.location, deviceInfo.ipAddress ),
-                refreshToken: hashedToken,
+                refreshToken: await TokenHash.create(refreshToken),
                 version: 0,
             });
     
-            const accessToken = this.jwtTokenService.signAccessToken(userData, "30m");
-    
-            await this.userSessionCacheRepository.save(session);
+            await this.persistence.save(session);
     
             return {accessToken, refreshToken};
             

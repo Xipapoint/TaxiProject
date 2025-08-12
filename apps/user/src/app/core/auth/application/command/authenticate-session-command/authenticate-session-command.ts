@@ -1,6 +1,6 @@
 import { TokensAndDataRequest } from "@backend/grpc";
 import { ICommand } from "@nestjs/cqrs";
 
-export class RefreshTokensSessionCommand implements ICommand {
+export class AuthenticateSessionCommand implements ICommand {
     constructor(readonly props: TokensAndDataRequest) {}
 }

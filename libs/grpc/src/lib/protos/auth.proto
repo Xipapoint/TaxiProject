@@ -3,12 +3,20 @@ syntax = "proto3";
 package auth;
 
 service AuthService {
-    rpc Authenticate(AuthenticateRequest) returns (SuccessResponse);
-    rpc CreateUserSession(CreateUserRequest) returns (CreateUserSessionResponse);
-    rpc RefreshTokens(RefreshTokenRequest) returns (TokenPair);
+    rpc Authenticate(TokensAndDataRequest) returns (SuccessResponse);
+    rpc CreateUserSession(UserDataWithDeviceRequest) returns (CreateUserSessionResponse);
+    rpc RefreshTokens(TokensAndDataRequest) returns (RefreshTokensResponse);
 }
 
+
+
+
 // SHARED !!!
+
+message TokenPair {
+    string refreshToken = 1;
+    string accessToken = 2;
+}
 
 message UserData {
     string userId = 1;
@@ -16,7 +24,7 @@ message UserData {
 
 // REQUEST !!!
 
-message AuthenticateRequest {
+message TokenRequest {
     string token = 1;
 }
 
@@ -26,42 +34,45 @@ message DeviceInfo {
   string ipAddress = 3;
 }
 
-message CreateUserRequest {
+message UserDataWithDeviceRequest {
     UserData userData = 1;
     DeviceInfo deviceInfo = 2;
 }
 
-// RESPONSE !!!
-
-message SuccessResponse {
-    bool success = 1;
+message TokensAndDataRequest {
+    UserDataWithDeviceRequest data = 1;
+    TokenPair tokens = 2;
 }
 
+// RESPONSE !!!
 message Error {
     string errorMessage = 1;
     int32 statusCode = 2;
 }
-
-message TokenPair {
-    string refreshToken = 1;
-    string accessToken = 2;
-}
-
-message User {
+message UserAndTokensResponse {
     UserData userData = 1;
     TokenPair tokenPair = 2;
+}
+
+
+
+message SuccessResponse {
+    bool success = 1;
+    optional Error error = 2;
 }
 
 message CreateUserSessionResponse {
     bool success = 1;
     oneof result {
-        User user = 2;
+        UserAndTokensResponse data = 2;
         Error error = 3;
     }
 }
 
-message RefreshTokenRequest {
-    UserData userData = 1;
-    DeviceInfo deviceInfo = 2;
-    TokenPair tokens = 3;
+message RefreshTokensResponse {
+    bool success = 1;
+    oneof result {
+        TokenPair data = 2;
+        Error error = 3;
+    }
 }

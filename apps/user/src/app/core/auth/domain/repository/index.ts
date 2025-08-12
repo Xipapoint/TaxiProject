@@ -1,2 +1,2 @@
-export * from './UserSession/UserSessionCacheRepository'
-export * from './UserSession/UserSessionRepository'
+export * from './UserSession/IUserSessionCacheRepository'
+export * from './UserSession/IUserSessionRepository'
