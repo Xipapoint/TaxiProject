@@ -1,14 +1,19 @@
-import { Transactional } from "@backend/nestjs";
+import { NestjsInjectionToken, QueryRunnerManager, Transactional } from "@backend/nestjs";
+import { Inject } from "@nestjs/common";
 import { CommandHandler, ICommandHandler } from "@nestjs/cqrs";
 import { RpcException } from "@nestjs/microservices";
-import { CreateUserSessionCommand } from '../command/create-user-session-command/create-user-session-command';
-import { ResponseOnCreateUserSession } from '../dto';
-import { IUserSessionService } from '../interface';
+import { CreateUserSessionCommand } from '../../command/create-user-session-command/create-user-session-command';
+import { ResponseOnCreateUserSession } from '../../dto';
+import { InjectionToken } from "../../injection-token";
+import { IUserSessionManager } from '../../interface';
 
 @CommandHandler(CreateUserSessionCommand)
 export class CreateUserSessionCommandHandler implements ICommandHandler<CreateUserSessionCommand, ResponseOnCreateUserSession> {
     constructor(
-        private readonly userSessionService: IUserSessionService,
+        @Inject(InjectionToken.USER_SESSION_MANAGER)
+        private readonly userSessionService: IUserSessionManager,
+        @Inject(NestjsInjectionToken.QUERY_RUNNER_MANAGER)
+        private readonly queryRunnerManager: QueryRunnerManager
     ) {}
 
     @Transactional()

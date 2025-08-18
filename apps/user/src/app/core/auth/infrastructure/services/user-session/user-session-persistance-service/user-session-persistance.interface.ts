@@ -1,4 +1,4 @@
-import { UserSession } from '../../../domain/entities/UserSession';
+import { UserSession } from '../../../../domain/entities/UserSession';
 export interface IUserSessionPersistanceService {
     save(session: UserSession): Promise<void>
     saveInDb(session: UserSession): Promise<void>

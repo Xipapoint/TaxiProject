@@ -1,4 +1,4 @@
-import { PostgresErrorCode, ConflictError } from "@backend/nestjs";
+import { PostgresErrorCode, ConflictError, NestjsInjectionToken, QueryRunnerManager } from "@backend/nestjs";
 import { Injectable, OnModuleInit, Inject } from "@nestjs/common";
 
 import { QueryRunner, EntityManager, DataSource } from "typeorm";
@@ -15,11 +15,13 @@ export class UserSessionRepositoryImplement implements OnModuleInit, IUserSessio
   private readConnection: EntityManager;
   
   constructor(
-    private readonly dataSource: DataSource
+    private readonly dataSource: DataSource,
+    @Inject(NestjsInjectionToken.QUERY_RUNNER_MANAGER)
+    private readonly queryRunnerManager: QueryRunnerManager
   ) {}
 
   onModuleInit() {
-    this.writeConnection = this.dataSource.createQueryRunner();
+    this.writeConnection = this.queryRunnerManager.getQueryRunner();
     this.readConnection = this.dataSource.manager;
   }
 

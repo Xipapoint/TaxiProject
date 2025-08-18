@@ -1,16 +1,14 @@
-import { Transactional } from '@backend/nestjs';
-import { RefreshTokensSessionCommand } from '../command';
-import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { TokenPair } from '@backend/grpc';
-import { IUserSessionCacheRepository } from '../../domain/repository/UserSession/IUserSessionCacheRepository';
+import { NestjsInjectionToken, QueryRunnerManager, Transactional } from '@backend/nestjs';
 import { Inject } from '@nestjs/common';
-import { InjectionToken } from '../injection-token';
-import { IJwtTokenService } from '../interface';
-import { UserSessionFactory } from '../../domain/factories';
-import { TokenHash, DeviceInfo, Id } from '../../domain/valueObjects';
-import { IUserSessionRepository } from '../../domain/repository/UserSession/IUserSessionRepository';
-import { IUserSessionService } from '../interface';
+import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { RpcException } from '@nestjs/microservices';
+import { UserSessionFactory } from '../../domain/factories';
+import { IUserSessionCacheRepository } from '../../domain/repository/UserSession/IUserSessionCacheRepository';
+import { IUserSessionRepository } from '../../domain/repository/UserSession/IUserSessionRepository';
+import { RefreshTokensSessionCommand } from '../command';
+import { InjectionToken } from '../injection-token';
+import { IJwtTokenService, IUserSessionService } from '../interface';
 
 @CommandHandler(RefreshTokensSessionCommand)
 export class RefreshTokensSessionCommandHandler implements ICommandHandler<RefreshTokensSessionCommand, TokenPair> {
@@ -24,6 +22,8 @@ export class RefreshTokensSessionCommandHandler implements ICommandHandler<Refre
             @Inject(InjectionToken.JWT_TOKEN_SERVICE)
             private readonly jwtTokenService: IJwtTokenService,
             private readonly userSessionService: IUserSessionService,
+            @Inject(NestjsInjectionToken.QUERY_RUNNER_MANAGER)
+            private readonly queryRunnerManager: QueryRunnerManager
         ) {}
 
     @Transactional()

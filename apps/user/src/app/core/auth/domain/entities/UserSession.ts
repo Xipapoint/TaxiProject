@@ -27,6 +27,9 @@ export interface IUser {
   revoke: (id: string) => void
   shouldInvalidate: (refreshToken: UserSession) => boolean
   shouldInvalidateByDevice: (otherDevice: DeviceInfo) => boolean
+  suspiciousActivityDetected: (userId: string, email: string, reason: string) => void
+  newIpOrDeviceDetected: (otherDevice: DeviceInfo) => void
+  checkNewIpOrDevice: (device: string, location: string, ipAddress: string) => boolean
   commit: () => void;
 }
 
@@ -105,17 +108,32 @@ export class UserSession extends AggregateRoot implements IUser {
 
   shouldInvalidate(userSession: UserSession): boolean {
     const otherRefreshToken = userSession.getRefreshTokenHash()
+    const equals = this.refreshTokenHash.matches(otherRefreshToken.getValue())
+
     const isOtherRevoked = userSession.getIsRevoked()
     const isOtherExpired = userSession.expiresAt.getValue() < new Date()
-    const equals = this.refreshTokenHash.matches(otherRefreshToken.getValue())
+
     const isSessionOld = (this.getVersion() % userSession.getVersion()) > 1
-    if (!equals || isOtherRevoked || isOtherExpired || !isSessionOld)
-      return true
+
+    if (!equals || isOtherRevoked || isOtherExpired)
+      return isSessionOld ? true : this.shouldInvalidateByDevice(userSession.deviceInfo)
     else return false
   }
 
   shouldInvalidateByDevice(otherDevice: DeviceInfo): boolean {
     return this.deviceInfo.validate(otherDevice)
+  }
+  
+  suspiciousActivityDetected(reason: string) {
+    // CREATE NEW EVENT TO SEND EMAIL
+  }
+
+  newIpOrDeviceDetected(otherDevice: DeviceInfo) {
+    // CREATE NEW EVENT TO SEND EMAIL
+  }
+
+  checkNewIpOrDevice(device: string, location: string, ipAddress: string) {
+    return this.deviceInfo.validate(new DeviceInfo(device, location, ipAddress))
   }
 
 }

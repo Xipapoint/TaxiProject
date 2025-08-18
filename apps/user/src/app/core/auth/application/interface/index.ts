@@ -1,4 +1,5 @@
 export * from './jwt-token-service/jwt-token-service.interface'
 export * from './user-session-service/user-session-service.interface'
-export * from './user-session-persistance-service/user-session-persistance.interface'
+export * from './user-session/user-session-persistance-service/user-session-persistance.interface'
 export * from './user-session-tokens-service/user-session-tokens.service'
+export * from './user-session'

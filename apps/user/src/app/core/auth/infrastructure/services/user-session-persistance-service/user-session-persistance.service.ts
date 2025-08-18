@@ -6,31 +6,61 @@ import { IUserSessionRepository } from '../../../domain/repository';
 import { IUserSessionPersistanceService } from '../../../application/interface';
 
 @Injectable()
-export class UserSessionPersistenceService implements IUserSessionPersistanceService {
-    constructor(
-        @Inject(InjectionToken.USER_SESSION_CACHE_REPOSITORY)
-        private readonly cacheRepo: IUserSessionCacheRepository,
-        @Inject(InjectionToken.USER_SESSION_REPOSITORY)
-        private readonly dbRepo: IUserSessionRepository
-    ) {}
+export class UserSessionPersistenceService
+  implements IUserSessionPersistanceService
+{
+  constructor(
+    @Inject(InjectionToken.USER_SESSION_CACHE_REPOSITORY)
+    private readonly cacheRepo: IUserSessionCacheRepository,
+    @Inject(InjectionToken.USER_SESSION_REPOSITORY)
+    private readonly dbRepo: IUserSessionRepository
+  ) {}
 
-    async saveInDb(session: UserSession) {
-        await this.dbRepo.save(session);
+  async saveInDb(session: UserSession) {
+    try {
+      await this.dbRepo.save(session);
+    } catch (error) {
+      throw error;
     }
+  }
 
-    async saveInCache(session: UserSession) {
-        await this.cacheRepo.save(session);
+  async saveInCache(session: UserSession) {
+    try {
+      await this.cacheRepo.save(session);
+    } catch (error) {
+      throw error;
     }
+  }
 
-    async save(session: UserSession) {
-        await this.dbRepo.save(session);
-        await this.cacheRepo.save(session);
+  async save(session: UserSession) {
+    try {
+      await this.dbRepo.save(session);
+    } catch (dbError) {
+      throw dbError;
     }
+  }
 
-    async deleteByIdInDb(sessionId: string) {
-        await this.dbRepo.deleteById(sessionId);
+  async deleteById(sessionId: string): Promise<void> {
+    try {
+      await this.dbRepo.deleteById(sessionId);
+      await this.cacheRepo.deleteById(sessionId);
+    } catch (error) {
+      throw error;
     }
-    async deleteByIdInCache(sessionId: string) {
-        await this.cacheRepo.deleteById(sessionId);
+  }
+
+  async deleteByIdInDb(sessionId: string) {
+    try {
+      await this.dbRepo.deleteById(sessionId);
+    } catch (error) {
+      throw error;
+    }
+  }
+  async deleteByIdInCache(sessionId: string) {
+    try {
+      await this.cacheRepo.deleteById(sessionId);
+    } catch (error) {
+      throw error;
+    }
   }
 }

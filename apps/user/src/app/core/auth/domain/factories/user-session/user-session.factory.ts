@@ -6,10 +6,9 @@ import { DeviceInfo, ExpiresAt, TokenHash } from '../../valueObjects';
 
 
 type CreateUserSessionOptions = Readonly<{
-  readonly id: Id;
-  readonly userId: Id;
-  readonly refreshToken: TokenHash;
-  readonly deviceInfo: DeviceInfo;
+  readonly userId: string;
+  readonly refreshToken: string;
+  readonly deviceInfo: { device: string, location: string, ipAddress: string };
   version: number
 }>;
 
@@ -21,8 +20,11 @@ export class UserSessionFactory {
       new UserSession(
         {
           ...options,
+          id: new Id(),
+          userId: new Id(options.userId),
           expiresAt: ExpiresAt.createOneWeekFromNow(),
-          refreshTokenHash: options.refreshToken,
+          refreshTokenHash: await TokenHash.create(options.refreshToken),
+          deviceInfo: new DeviceInfo(options.deviceInfo.device, options.deviceInfo.location, options.deviceInfo.ipAddress),
           isRevoked: false,
           createdAt: new Date(),
           lastUsedAt: new Date(),
