@@ -1,5 +1,5 @@
 import { TokenPair, UserData } from "@backend/grpc";
-import { Injectable, Inject } from "@nestjs/common";
+import { Injectable, Inject, UnauthorizedException } from "@nestjs/common";
 import { IJwtTokenService, IUserSessionTokensService } from "../../../application/interface";
 import { InjectionToken } from "../../../application/injection-token";
 import { RpcException } from "@nestjs/microservices";
@@ -17,15 +17,19 @@ export class TokenService implements IUserSessionTokensService {
   async verifyTokens(tokens: TokenPair): Promise<TokenPair> {
     const { accessToken, refreshToken } = tokens;
     try {
-      await this.jwtService.verifyToken(accessToken);
-      await this.jwtService.verifyToken(refreshToken);
+      await this.jwtService.verifyToken(accessToken).catch((reason) => {
+        throw new UnauthorizedException(reason.message);
+      });
+      await this.jwtService.verifyToken(refreshToken).catch((reason) => {
+        throw new UnauthorizedException(reason.message);
+      });
       return { accessToken, refreshToken };
     } catch (err: any) {
-      // Проверяем тип ошибки
-      if (err?.name === "TokenExpiredError") {
-        throw new TokenExpiredRpcException();
+      if (err.name === 'TokenExpiredError' || err.name === 'JsonWebTokenError') {
+        throw new UnauthorizedException(err.message);
       }
-      throw new RpcException("Invalid tokens");
+
+      throw new RpcException(err.message || 'Token verification failed');
+    }
   }
-}
 }

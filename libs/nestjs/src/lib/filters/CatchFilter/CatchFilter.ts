@@ -1,55 +1,48 @@
+
 import {
   ExceptionFilter,
   Catch,
   ArgumentsHost,
-  HttpException,
-  HttpStatus,
   Logger,
   Injectable,
 } from '@nestjs/common';
 import { Response } from 'express';
-import { AppError } from '../../errors';
+import { ErrorHandlerFactory } from '../common/error-handler-factory';
+
+/**
+ * CatchFilter uses error handler strategies to process different error types.
+ * - SRP: delegates error handling logic to dedicated handlers
+ * - OCP: new handlers can be added without modifying this filter
+ */
 @Catch()
 @Injectable()
 export class CatchFilter implements ExceptionFilter {
-    private readonly logger = new Logger(CatchFilter.name)
+  private readonly logger = new Logger(CatchFilter.name);
+  private readonly errorHandlerFactory = new ErrorHandlerFactory();
+
   catch(exception: unknown, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
 
-    let status = HttpStatus.INTERNAL_SERVER_ERROR;
-    let message = 'Internal Server Error';
+    // Select appropriate handler for the exception
+    const handler = this.errorHandlerFactory.getHandler(exception);
+    const result = handler.handle(exception);
 
-    if (exception instanceof AppError) {
-      status = exception.statusCode;
-      message = exception.message;
-
-      if (exception.isOperational) {
-        this.logger.warn(`[${status}] ${message}`);
-      } else {
-        // TODO: SEND ALERT TO LOGGING AWS MICROSERVICE
-        this.logger.error(`Non-operational error: ${message}`);
-      }
-    } else if (exception instanceof HttpException) {
-      status = exception.getStatus();
-      const responseBody = exception.getResponse();
-      message =
-        typeof responseBody === 'string'
-          ? responseBody
-          : (responseBody as any).message || message;
-
-      this.logger.warn(`[${status}] ${message}`);
-    } else if (exception instanceof Error) {
+    // Logging based on error type and operational status
+    if (!result.isOperational) {
+      // Non-operational AppError
+      this.logger.error(`Non-operational error: ${result.errorMessage}`);
       // TODO: SEND ALERT TO LOGGING AWS MICROSERVICE
-      this.logger.error(exception.message);
+    } else if (result.statusCode && result.statusCode >= 500) {
+      this.logger.error(result.errorMessage);
+      // TODO: SEND ALERT TO LOGGING AWS MICROSERVICE
     } else {
-      // TODO: SEND ALERT TO LOGGING AWS MICROSERVICE
-      this.logger.error(`Unknown error: ${JSON.stringify(exception)}`);
+      this.logger.warn(`[${result.statusCode}] ${result.errorMessage}`);
     }
 
-    response.status(status).json({
+    response.status(result.statusCode).json({
       success: false,
-      message,
+      message: result.errorMessage,
     });
   }
 }
