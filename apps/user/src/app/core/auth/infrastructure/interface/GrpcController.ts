@@ -11,53 +11,54 @@ import { ResponseOnCreateUserSession } from '../../application/dto';
 @AuthServiceControllerMethods()
 @UseFilters(GrpcCatchFilter)
 export class AuthGrpcController implements AuthServiceController {
-    constructor(readonly commandBus: CommandBus, readonly queryBus: QueryBus) {}
-    async refreshTokens(request: TokensAndDataRequest): Promise<RefreshTokensResponse> {
-        const response = await this.commandBus.execute<RefreshTokensSessionCommand, TokenPair>(new RefreshTokensSessionCommand({
-            ...request
-        }))
+  constructor(readonly commandBus: CommandBus, readonly queryBus: QueryBus) {}
+  async refreshTokens(
+    request: TokensAndDataRequest
+  ): Promise<RefreshTokensResponse> {
+    const response = await this.commandBus.execute<
+      RefreshTokensSessionCommand,
+      TokenPair
+    >(
+      new RefreshTokensSessionCommand({
+        ...request,
+      })
+    );
 
-        return {
-            success: true,
-            data: {
-                ...response
-            }
-        }
-    }
-    async authenticate(request: TokensAndDataRequest): Promise<SuccessResponse> {
-        try {
-            // Execute the authenticate command to verify the session and tokens
-            await this.commandBus.execute<AuthenticateSessionCommand, TokenPair>(
-                new AuthenticateSessionCommand(request)
-            );
-            
-            // If authentication succeeds, return success response
-            return {
-                success: true
-            };
-        } catch (error) {
-            // If authentication fails, return error response  
-            // The error will be handled by the GrpcCatchFilter
-            return {
-                success: false,
-                error: {
-                    statusCode: 401,
-                    errorMessage: error?.message || 'Authentication failed'
-                }
-            };
-        }
-    }
+    return {
+      success: true,
+      data: {
+        ...response,
+      },
+    };
+  }
+  async authenticate(request: TokensAndDataRequest): Promise<SuccessResponse> {
+    const response = await this.commandBus.execute<
+      AuthenticateSessionCommand,
+      TokenPair
+    >(new AuthenticateSessionCommand(request));
 
-    async createUserSession(request: UserDataWithDeviceRequest): Promise<CreateUserSessionResponse> {
-        const response = await this.commandBus.execute<CreateUserSessionCommand, ResponseOnCreateUserSession>(new CreateUserSessionCommand({
-            ...request
-        }))
-        return {
-            success: true,
-            data: {
-                userData: response.userData,
-                tokenPair: response.tokenPair
-            }
-        }
-    }
+    return {
+      success: true,
+    };
+  }
+
+  async createUserSession(
+    request: UserDataWithDeviceRequest
+  ): Promise<CreateUserSessionResponse> {
+    const response = await this.commandBus.execute<
+      CreateUserSessionCommand,
+      ResponseOnCreateUserSession
+    >(
+      new CreateUserSessionCommand({
+        ...request,
+      })
+    );
+    return {
+      success: true,
+      data: {
+        userData: response.userData,
+        tokenPair: response.tokenPair,
+      },
+    };
+  }
 }
