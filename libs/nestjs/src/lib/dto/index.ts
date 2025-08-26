@@ -1,1 +1,2 @@
-export * from './response/api-response'
+export * from './response'
+export * from './interface'

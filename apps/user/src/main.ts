@@ -11,10 +11,20 @@ import { Packages } from '@backend/grpc';
 import { join } from 'path';
 import { ConfigService } from '@nestjs/config';
 import { SuccessResponseInterceptor } from '@backend/nestjs';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   const globalPrefix = 'api';
+   const config = new DocumentBuilder()
+    .setTitle('User domain api')
+    .setDescription('The user API description')
+    .setVersion('1.0')
+    .addTag('users')
+    .build();
+  const documentFactory = () => SwaggerModule.createDocument(app, config);
+  SwaggerModule.setup(globalPrefix, app, documentFactory);
+
   app.setGlobalPrefix(globalPrefix);
   app.useGlobalInterceptors(new SuccessResponseInterceptor())
   app.connectMicroservice<GrpcOptions>({

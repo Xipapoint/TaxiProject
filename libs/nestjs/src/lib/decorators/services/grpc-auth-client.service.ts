@@ -9,7 +9,7 @@ import {
   RefreshTokensResponse,
   Packages
 } from '@backend/grpc';
-import { IAuthClient } from '../decorators/interfaces/auth-client.interface';
+import { IAuthClient } from '../interfaces/auth-client.interface';
 
 /**
  * gRPC implementation of the IAuthClient interface

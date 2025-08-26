@@ -8,6 +8,6 @@
     "emitDecoratorMetadata": true,
     "target": "es2021"
   },
-  "include": ["src/**/*.ts", "Dockerfile.ts"],
+  "include": ["src/**/*.ts", "Dockerfile.ts", "../../libs/nestjs/src/lib/services/geolocation-ip/geolocation-ip.service.ts"],
   "exclude": ["jest.config.ts", "src/**/*.spec.ts", "src/**/*.test.ts"]
 }

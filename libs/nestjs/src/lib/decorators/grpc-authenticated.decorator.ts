@@ -64,12 +64,12 @@ export class GrpcAuthGuard implements CanActivate {
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     // Check if the route requires authentication
-    const isAuthenticated = this.reflector.getAllAndOverride<GrpcAuthenticationOptions>(
+    const authOptions = this.reflector.getAllAndOverride<GrpcAuthenticationOptions>(
       GRPC_AUTHENTICATED_KEY,
       [context.getHandler(), context.getClass()]
     );
 
-    if (!isAuthenticated) {
+    if (!authOptions) {
       return true; // No authentication required
     }
 
@@ -77,7 +77,7 @@ export class GrpcAuthGuard implements CanActivate {
     const authData = this.extractAuthenticationData(request);
 
     if (!authData) {
-      throw new Error(isAuthenticated.errorMessage || 'Authentication data missing');
+      throw new Error(authOptions.errorMessage || 'Authentication data missing');
     }
 
     try {
@@ -89,27 +89,27 @@ export class GrpcAuthGuard implements CanActivate {
       }
 
       // Authentication failed, attempt refresh if enabled
-      if (isAuthenticated.autoRefresh !== false) {
+      if (!authOptions.autoRefresh) {
         return await this.handleTokenRefresh(authData, request);
       }
 
-      throw new Error(isAuthenticated.errorMessage || 'Authentication failed');
+      throw new Error(authOptions.errorMessage || 'Authentication failed');
     } catch (error) {
       // If authentication fails and auto-refresh is enabled, try refreshing tokens
-      if (isAuthenticated.autoRefresh !== false) {
+      if (authOptions.autoRefresh !== false) {
         try {
           return await this.handleTokenRefresh(authData, request);
         } catch (refreshError) {
           const refreshErrorMessage = refreshError instanceof Error ? refreshError.message : 'Unknown error';
           throw new Error(
-            isAuthenticated.errorMessage || 
+            authOptions.errorMessage || 
             `Authentication and token refresh failed: ${refreshErrorMessage}`
           );
         }
       }
 
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-      throw new Error(isAuthenticated.errorMessage || errorMessage);
+      throw new Error(authOptions.errorMessage || errorMessage);
     }
   }
 
@@ -164,17 +164,17 @@ export class GrpcAuthGuard implements CanActivate {
 
     // For HTTP requests, extract from headers and body
     if (request.headers || request.cookies) {
-      const accessToken = request.headers?.authorization?.replace('Bearer ', '') || 
-                         request.cookies?.Authentication;
+      const accessToken = request.headers?.['authorization']?.replace('Bearer ', '') || 
+                         request.cookies?.['Authentication'];
       const refreshToken = request.headers?.['refresh-token'] || 
-                          request.cookies?.Refresh;
+                          request.cookies?.['Refresh'];
 
       if (!accessToken || !refreshToken) {
         return null;
       }
 
       // Extract user data from token payload or request body
-      const userData: UserData = request.user || request.body?.userData;
+      const userData = request.user || request.body?.userData;
       const deviceInfo: DeviceInfo = request.body?.deviceInfo || {
         device: request.headers?.['user-agent'] || 'unknown',
         ipAddress: request.ip || request.connection?.remoteAddress || 'unknown',

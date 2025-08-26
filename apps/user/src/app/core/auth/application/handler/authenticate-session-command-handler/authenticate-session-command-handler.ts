@@ -28,8 +28,6 @@ export class AuthenticateSessionCommandHandler implements ICommandHandler<Authen
         
     }
     @Transactional()
-    //TODO: CREATE AUTHINTICATE METHOD TO CHECK WETHER USER AUTHENTICATED - RETURN TRUE OR FALSE. 
-    // IN CASE OF ERROR OUTPUT SHOULD BE WITH ERROR MESSAGE(CHECK GRPC LIBRARY)
     async execute(command: AuthenticateSessionCommand): Promise<TokenPair> {
         const { data, tokens } = command.props
         const { userData, deviceInfo } = data

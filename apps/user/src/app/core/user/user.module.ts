@@ -6,7 +6,6 @@ import { CreateClientHandler } from './application/handler/CreateClientHandler/C
 import { CqrsModule } from "@nestjs/cqrs";
 import { PasswordModule } from "../../libs/PasswordModule";
 import { ClientController } from './infrastructure/interface/ClientController';
-import { AuthGrpcService } from './infrastructure/service/auth-grpc.service';
 import { Packages } from "@backend/grpc";
 import { ConfigService } from "@nestjs/config";
 import { ClientsModule, Transport } from "@nestjs/microservices";
@@ -22,11 +21,6 @@ const infrastructure: Provider[] = [
     provide: InjectionToken.CLIENT_REPOSITORY,
     useClass: ClientRepositoryImplement,
   },
-
-  {
-    provide: InjectionToken.AUTH_TRANSPORT_SERVICE,
-    useClass: AuthGrpcService
-  }
 ]
 
 const application = [
