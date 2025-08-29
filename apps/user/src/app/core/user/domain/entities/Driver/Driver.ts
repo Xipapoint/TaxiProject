@@ -34,8 +34,10 @@ export class DriverImplement extends AggregateRoot implements Driver {
     private isOnShift: boolean
     private carId?: string
     private readonly profile: UserProfile;
-    constructor(properties: DriverProperties) {
+    constructor(userProps: UserProfileProperties, properties: DriverProperties) {
       super();
+      this.profile = new UserProfile(userProps);
+      this.driverId = userProps.id;
       Object.assign(this, properties);
     }
     getUserId() {

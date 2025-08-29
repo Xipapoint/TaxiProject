@@ -44,10 +44,6 @@ const infrastructure: Provider[] = [
     useClass: UserSessionPersistenceService,
   },
   {
-    provide: InjectionToken.USER_SESSION_SERVICE,
-    useClass: UserSessionService,
-  },
-  {
     provide: InjectionToken.USER_SESSION_MANAGER,
     useClass: UserSessionManager,
   },

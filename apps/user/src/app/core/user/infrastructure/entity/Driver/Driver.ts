@@ -3,6 +3,15 @@ import { DRIVER_VERIFICATION_STATUS } from '../../../domain/enum/DriverVerificat
 import { User } from '../User';
 import { Column, Entity, JoinColumn, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
 
+
+/*TODO: 
+  ADD:
+    - driver's license number
+    - vehicle information
+    - insurance details
+    - vehicle registration number
+    - vehicle details
+*/
 @Entity()
 export class Driver {
   @PrimaryGeneratedColumn('uuid') clientId: string

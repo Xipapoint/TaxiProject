@@ -1,5 +1,5 @@
-import { CreateUserRequest, CreateUserSessionResponse } from '@backend/grpc';
+import { CreateUserSessionResponse, UserDataWithDeviceRequest } from '@backend/grpc';
 
 export interface AuthServiceTransport {
-    createUser: (data: CreateUserRequest) => Promise<CreateUserSessionResponse>
+    createUser: (data: UserDataWithDeviceRequest) => Promise<CreateUserSessionResponse>
 }
