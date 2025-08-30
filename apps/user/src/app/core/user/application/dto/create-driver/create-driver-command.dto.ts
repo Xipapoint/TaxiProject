@@ -19,4 +19,11 @@ export interface CreateDriverCommandDto {
     email: string;
     dateOfBirth: string;
     password: string;
+    licenseNumber?: string;
+    vehicleModel?: string;
+    vehicleYear?: number;
+    vehiclePlateNumber?: string;
+    insuranceNumber?: string;
+    emergencyContactName: string;
+    emergencyContactPhone: string;
 }

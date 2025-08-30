@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { Column, Entity, JoinColumn, OneToOne, PrimaryColumn } from 'typeorm';
+import { Entity, JoinColumn, OneToOne, PrimaryColumn, RelationId } from 'typeorm';
 import { User } from '../User';
 
 @Entity('clients')
@@ -16,6 +16,6 @@ export class ClientEntity {
   @JoinColumn({ name: 'userId' })
   user: User;
 
-  @Column({ type: 'uuid' })
+  @RelationId((client: ClientEntity) => client.user)
   userId: string;
 }

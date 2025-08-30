@@ -15,6 +15,13 @@ type CreateDriverOptions = Readonly<{
   email: string;
   dateOfBirth: string;
   passwordHash: string;
+  licenseNumber?: string;
+  vehicleModel?: string;
+  vehicleYear?: number;
+  vehiclePlateNumber?: string;
+  insuranceNumber?: string;
+  emergencyContactName: string;
+  emergencyContactPhone: string;
 }>;
 
 export class DriverFactory {
@@ -32,9 +39,17 @@ export class DriverFactory {
           updatedAt: new Date(),
         },
         {
+          driverId: new UserId(),
           verificationStatus: DRIVER_VERIFICATION_STATUS.PENDING,
           isOnShift: false,
-          carId: undefined
+          carId: undefined,
+          licenseNumber: options?.licenseNumber ?? '',
+          vehicleModel: options?.vehicleModel ?? '',
+          vehicleYear: options?.vehicleYear ?? 0,
+          vehiclePlateNumber: options?.vehiclePlateNumber ?? '',
+          insuranceNumber: options?.insuranceNumber ?? '',
+          emergencyContactName: options.emergencyContactName ?? '',
+          emergencyContactPhone: options.emergencyContactPhone ?? '',
         }
       ),
     );

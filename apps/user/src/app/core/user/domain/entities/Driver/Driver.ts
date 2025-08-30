@@ -6,8 +6,16 @@ import { UserId } from '../../valueObjects/UserId/UserId';
 import { UserProfile, UserProfileProperties } from '../UserProfile/UserProfile';
 
 export type DriverEssentialProperties = {
+  driverId: UserId;
   verificationStatus: DRIVER_VERIFICATION_STATUS;
-  isOnShift: boolean
+  isOnShift: boolean;
+  licenseNumber: string;
+  vehicleModel: string;
+  vehicleYear: number;
+  vehiclePlateNumber: string;
+  insuranceNumber: string;
+  emergencyContactName: string;
+  emergencyContactPhone: string;
 }
 
 export type DriverOptionalProperties = {
@@ -29,15 +37,21 @@ export interface Driver extends IDriver {
 }
 
 export class DriverImplement extends AggregateRoot implements Driver {
-    private readonly driverId: UserId;
     private verificationStatus: DRIVER_VERIFICATION_STATUS
     private isOnShift: boolean
     private carId?: string
+    private licenseNumber?: string;
+    private vehicleModel?: string;
+    private vehicleYear?: number;
+    private vehiclePlateNumber?: string;
+    private insuranceNumber?: string;
+    private emergencyContactName?: string;
+    private emergencyContactPhone?: string;
     private readonly profile: UserProfile;
+    private readonly driverId: UserId;
     constructor(userProps: UserProfileProperties, properties: DriverProperties) {
       super();
       this.profile = new UserProfile(userProps);
-      this.driverId = userProps.id;
       Object.assign(this, properties);
     }
     getUserId() {
@@ -68,13 +82,13 @@ export class DriverImplement extends AggregateRoot implements Driver {
     compareId: (id: string) => boolean;
 
     updateVerificationStatus(status: DRIVER_VERIFICATION_STATUS): void {
-      throw new Error('Method not implemented.');
+      this.verificationStatus = status;
     }
     updateShiftStatus(isWorking: boolean): void {
-      throw new Error('Method not implemented.');
+      this.isOnShift = isWorking;
     }
     assignCar(carId: string): void {
-      throw new Error('Method not implemented.');
+      this.carId = carId;
     }
     requestDriverVerification() {
       if(this.verificationStatus === DRIVER_VERIFICATION_STATUS.PENDING)
@@ -89,4 +103,35 @@ export class DriverImplement extends AggregateRoot implements Driver {
     updatePassword: (passwordHash: string) => void;
     delete: () => void;
     commit: () => void;
+
+    getLicenseNumber() {
+      return this.licenseNumber;
+    }
+    getVehicleModel() {
+      return this.vehicleModel;
+    }
+    getVehicleYear() {
+      return this.vehicleYear;
+    }
+    getVehiclePlateNumber() {
+      return this.vehiclePlateNumber;
+    }
+    getInsuranceNumber() {
+      return this.insuranceNumber;
+    }
+    getEmergencyContactName() {
+      return this.emergencyContactName;
+    }
+    getEmergencyContactPhone() {
+      return this.emergencyContactPhone;
+    }
+    getVerificationStatus() {
+      return this.verificationStatus;
+    }
+    getIsOnShift() {
+      return this.isOnShift;
+    }
+    getCarId() {
+      return this.carId;
+    }
 }

@@ -1,10 +1,10 @@
 import { AuthServiceTransport } from '../../dto';
-import { DriverFactory } from '../../../domain/factories';
+import { DriverFactory, DriverRepository } from '../../../domain';
 import { NestjsInjectionToken, QueryRunnerManager, Transactional } from '@backend/nestjs';
 import { Logger, Inject } from '@nestjs/common';
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { CreateDriverCommand } from '../../command';
-import { InjectionToken } from '../../../../auth/application/injection-token';
+import { InjectionToken } from '../../InjectionToken';
 import { PASSWORD_GENERATOR, PasswordGenerator } from '../../../../../libs/PasswordModule';
 @CommandHandler(CreateDriverCommand)
 export class CreateDriverHandler
@@ -12,9 +12,9 @@ export class CreateDriverHandler
 {
   private readonly logger: Logger = new Logger(CreateDriverHandler.name)
   constructor(
-    @Inject(InjectionToken.CLIENT_REPOSITORY)
-    private readonly accountRepository: ClientRepository,
-    @Inject() private readonly accountFactory: DriverFactory,
+    @Inject(InjectionToken.DRIVER_REPOSITORY)
+    private readonly driverRepository: DriverRepository,
+    @Inject() private readonly driverFactory: DriverFactory,
     @Inject(PASSWORD_GENERATOR)
     private readonly passwordGenerator: PasswordGenerator,
     @Inject(InjectionToken.AUTH_TRANSPORT_SERVICE)
@@ -26,16 +26,16 @@ export class CreateDriverHandler
   }
 
   @Transactional()
-  async execute(command: CreateClientCommand): Promise<void> {
+  async execute(command: CreateDriverCommand): Promise<void> {
     try {
-      const client = this.accountFactory.create({
+      const driver = this.driverFactory.create({
         ...command.props,
         passwordHash: await this.passwordGenerator.generateKey(command.props.password),
       });
 
     const result = await this.authService.createUser({
       userData: {
-        userId: client.getClientIdValue()
+        userId: driver.getDriverIdValue()
       },
 
       /* 
@@ -53,11 +53,11 @@ export class CreateDriverHandler
     if(!result.success)
       throw new Error(`${result.error.errorMessage}, code: ${result.error.statusCode}`)
 
-    client.create();
+    driver.create();
 
-    await this.accountRepository.save(client);
+    await this.driverRepository.save(driver);
 
-    client.commit();
+    driver.commit();
     } catch (error) {
       this.logger.error(`Error in handler: ${error}`)
       throw error
